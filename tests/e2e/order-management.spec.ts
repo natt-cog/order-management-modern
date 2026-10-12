@@ -40,6 +40,17 @@ test("order lifecycle: create, add item (stock + total), validation, submit, man
   await add.getByLabel("Discount %").fill("10");
   await add.getByRole("button", { name: "Add product" }).click();
   await expect(page.getByTestId("items-table").locator("tbody tr")).toHaveCount(1);
+  const stockOf = async () => Number((await add.getByLabel("Product").locator("option").first().textContent())?.match(/\((\d+) in stock/)?.[1] ?? NaN);
+  const before = await stockOf();
+  const row = page.getByTestId("item-row").first();
+  await row.getByLabel("Item quantity").fill("5");
+  await row.getByRole("button", { name: "Update" }).click();
+  await expect(row.getByLabel("Item quantity")).toHaveValue("5");
+  await expect.poll(stockOf).toBe(before - 3);
+  await row.getByLabel("Item quantity").fill("100000");
+  await row.getByRole("button", { name: "Update" }).click();
+  await expect(page.locator("p[role=alert]")).toContainText("Insufficient stock to fulfill your order");
+  await expect.poll(stockOf).toBe(before - 3);
   await expect(page.getByTestId("order-total")).not.toHaveText("€ 0.00");
   await page.getByRole("button", { name: "Submit" }).click();
   await expect(page.getByText("Submitted", { exact: true }).first()).toBeVisible();

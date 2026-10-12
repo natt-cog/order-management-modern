@@ -54,10 +54,15 @@ export default async function OrderDetail({ params, searchParams }: { params: Pr
         <thead className="bg-slate-100 text-slate-600"><tr><th className="px-3 py-2 text-left">Product</th><th className="px-3 py-2 text-right">Price</th><th className="px-3 py-2 text-right">Qty</th><th className="px-3 py-2 text-right">Discount %</th><th className="px-3 py-2 text-right">Amount</th><th /></tr></thead>
         <tbody>
           {order.items.map((i) => (
-            <tr key={i.id} className="border-t">
+            <tr key={i.id} className="border-t" data-testid="item-row">
               <td className="px-3 py-2 capitalize">{i.product.name}</td><td className="px-3 py-2 text-right">{money(i.product.price)}</td>
-              <td className="px-3 py-2 text-right">{i.quantity}</td><td className="px-3 py-2 text-right">{i.discount}</td><td className="px-3 py-2 text-right">{money(i.amount)}</td>
-              <td className="px-3 py-2 text-right">{draft && <form action={removeItem.bind(null, id, i.id)}><button className="text-red-600 hover:underline">Remove</button></form>}</td>
+              <td className="px-3 py-2 text-right">{draft ? <input form={`item-${i.id}`} name="quantity" type="number" aria-label="Item quantity" defaultValue={i.quantity} className="w-20 rounded border px-2 py-1 text-right" /> : i.quantity}</td>
+              <td className="px-3 py-2 text-right">{draft ? <input form={`item-${i.id}`} name="discount" type="number" aria-label="Item discount %" defaultValue={i.discount} className="w-20 rounded border px-2 py-1 text-right" /> : i.discount}</td>
+              <td className="px-3 py-2 text-right">{money(i.amount)}</td>
+              <td className="px-3 py-2 text-right">{draft && <div className="flex justify-end gap-3">
+                <form id={`item-${i.id}`} action={addItem.bind(null, id)}><input type="hidden" name="itemId" value={i.id} /><input type="hidden" name="productId" value={i.productId} /><button className="text-sky-700 hover:underline">Update</button></form>
+                <form action={removeItem.bind(null, id, i.id)}><button className="text-red-600 hover:underline">Remove</button></form>
+              </div>}</td>
             </tr>
           ))}
         </tbody>
