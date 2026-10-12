@@ -1,0 +1,30 @@
+(OutSystems.Model.IESpace eSpace) => {
+    /*** creating IServerAction 'Country_Bootstrap' ***/
+    var country_Bootstrap = eSpace.CreateServerAction("Country_Bootstrap");
+    var bootstrap = eSpace.Folders.Named("Bootstrap");
+    country_Bootstrap.Folder = bootstrap;
+    var adminUserId = country_Bootstrap.CreateInputParameter("AdminUserId");
+    var _System_ = eSpace.References.Named("(System)");
+    var user = _System_.Entities.OfType<OutSystems.Model.Data.IServerEntitySignature>().Named("User");
+    adminUserId.DataType = user.IdentifierType;
+    var startNode = country_Bootstrap.CreateNode<OutSystems.Model.Logic.Nodes.IStartNode>();
+    var excelToRecordList = country_Bootstrap.CreateNode<OutSystems.Model.Logic.Nodes.IExcelToRecordListNode>("ExcelToRecordList");
+    var countryExcel = eSpace.Structures.Named("CountryExcel");
+    excelToRecordList.DataType = eSpace.GetOrCreateListType(eSpace.GetOrCreateAnonymousStructure(Tuple.Create<string, ITypeSignature>("CountryExcel", countryExcel)));
+    excelToRecordList.SetFileContent("Resources.Countries_xlsx.Content");
+    excelToRecordList.SetSheetName("\"Country\"");
+    startNode.Target = excelToRecordList;
+    var forEachNode = country_Bootstrap.CreateNode<OutSystems.Model.Logic.Nodes.IForEachNode>().ConnectedBelow(excelToRecordList, 1368);
+    forEachNode.SetRecordList("ExcelToRecordList");
+    var country_Save = country_Bootstrap.CreateNode<OutSystems.Model.Logic.Nodes.IExecuteServerActionNode>("Country_Save").ToTheRightOf(forEachNode, 1596);
+    var country_Save2 = eSpace.ServerActions.Named("Country_Save");
+    country_Save.Action = country_Save2;
+    country_Save.Target = forEachNode;
+    var invoker = country_Save2.InputParameters.Named("Invoker");
+    country_Save.SetArgumentValue(invoker, "AdminUserId");
+    var countryRecord = country_Save2.InputParameters.Named("CountryRecord");
+    country_Save.SetArgumentValue(countryRecord, "{ Id: NullIdentifier(), Code: ExcelToRecordList.Current.CountryExcel.Code, Name: ExcelToRecordList.Current.CountryExcel.Label, CreatedBy: AdminUserId, CreatedOn: CurrDateTime(), UpdatedBy: AdminUserId, UpdatedOn: CurrDateTime(), IsActive: True }");
+    forEachNode.CycleTarget = country_Save;
+    var endNode = country_Bootstrap.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>();
+    forEachNode.Target = endNode;
+}

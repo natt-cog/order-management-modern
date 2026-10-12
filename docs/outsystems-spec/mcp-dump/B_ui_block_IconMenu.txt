@@ -1,0 +1,28 @@
+(OutSystems.Model.UI.Mobile.IMobileFlow common) => {
+    /*** creating IMobileBlock 'IconMenu' ***/
+    var iconMenu = common.CreateBlock("IconMenu");
+    iconMenu.Public = true;
+    iconMenu.Shareable = true;
+    var onClick = iconMenu.CreateScreenAction("OnClick");
+    var startNode = onClick.CreateNode<OutSystems.Model.Logic.Nodes.IStartNode>();
+    var javaScript1 = onClick.CreateNode<OutSystems.Model.Logic.Nodes.IJavaScriptNode>("JavaScript1");
+    javaScript1.JavaScript = "var layout = document.querySelector(\'.layout\');\n\nif(layout.classList.contains(\'menu-visible\')) {\n    layout.classList.remove(\'menu-visible\');\n} else {\n    layout.classList.add(\'menu-visible\');    \n}\n\n";
+    startNode.Target = javaScript1;
+    var endNode = onClick.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>();
+    javaScript1.Target = endNode;
+    var container = iconMenu.CreateWidget<ServiceStudio.Plugin.NRWidgets.IContainer>();
+    container.Gap = null;
+    container.SetStyle("\"menu-icon\"");
+    var container2 = container.CreateWidget<ServiceStudio.Plugin.NRWidgets.IContainer>();
+    container2.Gap = null;
+    container2.SetStyle("\"menu-icon-line\"");
+    var container3 = container.CreateWidget<ServiceStudio.Plugin.NRWidgets.IContainer>();
+    container3.Gap = null;
+    container3.SetStyle("\"menu-icon-line\"");
+    var container4 = container.CreateWidget<ServiceStudio.Plugin.NRWidgets.IContainer>();
+    container4.Gap = null;
+    container4.SetStyle("\"menu-icon-line\"");
+    var event2 = container.CreateEvent();
+    event2.Event = "onclick";
+    event2.Handler = onClick;
+}

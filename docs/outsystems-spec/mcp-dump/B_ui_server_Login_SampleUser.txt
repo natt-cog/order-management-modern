@@ -1,0 +1,39 @@
+(OutSystems.Model.IESpace eSpace) => {
+    /*** creating IServerAction 'Login_SampleUser' ***/
+    var login_SampleUser = eSpace.CreateServerAction("Login_SampleUser");
+    var userId = login_SampleUser.CreateInputParameter("UserId");
+    var _System_ = eSpace.References.Named("(System)");
+    var user = _System_.Entities.OfType<OutSystems.Model.Data.IServerEntitySignature>().Named("User");
+    userId.DataType = user.IdentifierType;
+    var startNode = login_SampleUser.CreateNode<OutSystems.Model.Logic.Nodes.IStartNode>();
+    var sampleUsers_Get = login_SampleUser.CreateNode<OutSystems.Model.Logic.Nodes.IExecuteServerActionNode>("SampleUsers_Get");
+    var sampleUsers_Get2 = eSpace.ServerActions.Named("SampleUsers_Get");
+    sampleUsers_Get.Action = sampleUsers_Get2;
+    startNode.Target = sampleUsers_Get;
+    var listAny = login_SampleUser.CreateNode<OutSystems.Model.Logic.Nodes.IExecuteServerActionNode>("ListAny");
+    var listAny2 = _System_.ServerActions.Named("ListAny");
+    listAny.Action = listAny2;
+    var list = listAny2.InputParameters.Named("List");
+    listAny.SetArgumentValue(list, "SampleUsers_Get.UserList");
+    var condition = listAny2.InputParameters.Named("Condition");
+    listAny.SetArgumentValue(condition, "SampleUsers_Get.UserList.Current.User.Id = UserId");
+    sampleUsers_Get.Target = listAny;
+    var ifNode = login_SampleUser.CreateNode<OutSystems.Model.Logic.Nodes.IIfNode>();
+    ifNode.SetCondition("ListAny.Result");
+    ifNode.Label = "Sample User?";
+    listAny.Target = ifNode;
+    var raiseExceptionNode = login_SampleUser.CreateNode<OutSystems.Model.Logic.Nodes.IRaiseExceptionNode>().ToTheRightOf(ifNode, 1600);
+    raiseExceptionNode.Exception = eSpace.NotRegistered;
+    raiseExceptionNode.SetExceptionMessage("\"Invalid Sample User to login\"");
+    ifNode.FalseTarget = raiseExceptionNode;
+    var login = login_SampleUser.CreateNode<OutSystems.Model.Logic.Nodes.IExecuteServerActionNode>("Login");
+    var login2 = _System_.ServerActions.Named("Login");
+    login.Action = login2;
+    var userId2 = login2.InputParameters.Named("UserId");
+    login.SetArgumentValue(userId2, "UserId");
+    var persistent = login2.InputParameters.Named("Persistent");
+    login.SetArgumentValue(persistent, "False");
+    ifNode.TrueTarget = login;
+    var endNode = login_SampleUser.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>();
+    login.Target = endNode;
+}

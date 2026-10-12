@@ -1,0 +1,11 @@
+(OutSystems.Model.UI.Mobile.IMobileFlow common) => {
+    /*** creating IMobileBlock 'Footer' ***/
+    var footer = common.CreateBlock("Footer");
+    var container = footer.CreateWidget<ServiceStudio.Plugin.NRWidgets.IContainer>();
+    container.Gap = null;
+    var textWidget = container.CreateWidget<OutSystems.Model.UI.Mobile.Widgets.ITextWidget>();
+    textWidget.Text = "Built with ";
+    var textWidget2 = container.CreateWidget<OutSystems.Model.UI.Mobile.Widgets.ITextWidget>();
+    textWidget2.SetStyleClasses("\"bold\"");
+    textWidget2.Text = "OutSystems Platform";
+}

@@ -1,0 +1,45 @@
+(OutSystems.Model.IESpace eSpace) => {
+    /*** creating IServerAction 'ProductFeature_SetIsActive' ***/
+    var productFeature_SetIsActive = eSpace.CreateServerAction("ProductFeature_SetIsActive");
+    productFeature_SetIsActive.Description = "Action that changes the IsActive attribute of the ProductFeature record in the Database.";
+    var productFeature = eSpace.Folders.Named("ProductFeature");
+    productFeature_SetIsActive.Folder = productFeature;
+    productFeature_SetIsActive.Public = true;
+    productFeature_SetIsActive.Shareable = true;
+    var productFeatureId = productFeature_SetIsActive.CreateInputParameter("ProductFeatureId");
+    var productFeature2 = eSpace.Entities.OfType<OutSystems.Model.Data.IServerEntity>().Named("ProductFeature");
+    productFeatureId.DataType = productFeature2.IdentifierType;
+    productFeatureId.Description = "Id of the record to be updated from the Database.";
+    var isActive = productFeature_SetIsActive.CreateInputParameter("IsActive");
+    isActive.DataType = eSpace.BooleanType;
+    isActive.Description = "New value of the IsActive attribute.";
+    var startNode = productFeature_SetIsActive.CreateNode<OutSystems.Model.Logic.Nodes.IStartNode>();
+    var getProductFeatureById = productFeature_SetIsActive.CreateNode<OutSystems.Model.Logic.Nodes.IAggregateNode>("GetProductFeatureById");
+    getProductFeatureById.SetMaxRecords("1");
+    var productFeature3 = getProductFeatureById.AsDatabaseAggregate.CreateSource(productFeature2);
+    getProductFeatureById.AsDatabaseAggregate.CreateFilter("ProductFeature.Id = ProductFeatureId");
+    startNode.Target = getProductFeatureById;
+    var ifNode = productFeature_SetIsActive.CreateNode<OutSystems.Model.Logic.Nodes.IIfNode>();
+    ifNode.SetCondition("GetProductFeatureById.List.Empty");
+    ifNode.Label = "ProductFeature not found?";
+    getProductFeatureById.Target = ifNode;
+    var assignNode = productFeature_SetIsActive.CreateNode<OutSystems.Model.Logic.Nodes.IAssignNode>().Below(ifNode, 1828);
+    assignNode.Label = "Set IsActive";
+    var assignment = assignNode.CreateAssignment("GetProductFeatureById.List.Current.ProductFeature.IsActive", "IsActive");
+    ifNode.FalseTarget = assignNode;
+    var raiseExceptionNode = productFeature_SetIsActive.CreateNode<OutSystems.Model.Logic.Nodes.IRaiseExceptionNode>().ToTheRightOf(ifNode, 1829);
+    var invalidArgumentsException = eSpace.UserExceptions.Named("InvalidArgumentsException");
+    raiseExceptionNode.Exception = invalidArgumentsException;
+    raiseExceptionNode.SetExceptionMessage("\"Cannot find the record in the database for the ProductImage entity with the identifier \" + ProductFeatureId + \".\"");
+    ifNode.TrueTarget = raiseExceptionNode;
+    var assignNode2 = productFeature_SetIsActive.CreateNode<OutSystems.Model.Logic.Nodes.IAssignNode>().ConnectedBelow(assignNode, 1829);
+    assignNode2.Label = "Set UpdatedOn and UpdatedBy";
+    var assignment2 = assignNode2.CreateAssignment("GetProductFeatureById.List.Current.ProductFeature.UpdatedBy", "GetUserId()");
+    var assignment3 = assignNode2.CreateAssignment("GetProductFeatureById.List.Current.ProductFeature.UpdatedOn", "CurrDateTime()");
+    var updateProductFeature = productFeature_SetIsActive.CreateNode<OutSystems.Model.Logic.Nodes.IExecuteServerActionNode>("UpdateProductFeature").ConnectedBelow(assignNode2, 1828);
+    updateProductFeature.Action = productFeature2.UpdateAction;
+    var updateProductFeature2 = productFeature2.UpdateAction;
+    var source = updateProductFeature2.InputParameters.Named("Source");
+    updateProductFeature.SetArgumentValue(source, "GetProductFeatureById.List.Current");
+    var endNode = productFeature_SetIsActive.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>().ConnectedBelow(updateProductFeature, 1829);
+}

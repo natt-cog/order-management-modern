@@ -1,0 +1,31 @@
+(OutSystems.Model.IESpace eSpace) => {
+    /*** creating IServerAction 'Brand_Bootstrap' ***/
+    var brand_Bootstrap = eSpace.CreateServerAction("Brand_Bootstrap");
+    brand_Bootstrap.Description = "Server Action responsible for bootstrapping Brand records to the Database.";
+    var bootstrap = eSpace.Folders.Named("Bootstrap");
+    brand_Bootstrap.Folder = bootstrap;
+    var adminUserId = brand_Bootstrap.CreateInputParameter("AdminUserId");
+    var _System_ = eSpace.References.Named("(System)");
+    var user = _System_.Entities.OfType<OutSystems.Model.Data.IServerEntitySignature>().Named("User");
+    adminUserId.DataType = user.IdentifierType;
+    var startNode = brand_Bootstrap.CreateNode<OutSystems.Model.Logic.Nodes.IStartNode>();
+    var excelToRecordList = brand_Bootstrap.CreateNode<OutSystems.Model.Logic.Nodes.IExcelToRecordListNode>("ExcelToRecordList");
+    var brandExcel = eSpace.Structures.Named("BrandExcel");
+    excelToRecordList.DataType = eSpace.GetOrCreateListType(eSpace.GetOrCreateAnonymousStructure(Tuple.Create<string, ITypeSignature>("BrandExcel", brandExcel)));
+    excelToRecordList.SetFileContent("Resources.Products_xlsx.Content");
+    excelToRecordList.SetSheetName("\"ProductBrand\"");
+    startNode.Target = excelToRecordList;
+    var forEachNode = brand_Bootstrap.CreateNode<OutSystems.Model.Logic.Nodes.IForEachNode>().ConnectedBelow(excelToRecordList, 1824);
+    forEachNode.SetRecordList("ExcelToRecordList");
+    var brand_Save = brand_Bootstrap.CreateNode<OutSystems.Model.Logic.Nodes.IExecuteServerActionNode>("Brand_Save").ToTheRightOf(forEachNode, 1596);
+    var brand_Save2 = eSpace.ServerActions.Named("Brand_Save");
+    brand_Save.Action = brand_Save2;
+    brand_Save.Target = forEachNode;
+    var invoker = brand_Save2.InputParameters.Named("Invoker");
+    brand_Save.SetArgumentValue(invoker, "AdminUserId");
+    var brandRecord = brand_Save2.InputParameters.Named("BrandRecord");
+    brand_Save.SetArgumentValue(brandRecord, "{ Id: NullIdentifier(), Name: Trim(ExcelToRecordList.Current.BrandExcel.Name), IsActive: True, CreatedBy: AdminUserId, CreatedOn: CurrDateTime(), UpdatedBy: AdminUserId, UpdatedOn: CurrDateTime() }");
+    forEachNode.CycleTarget = brand_Save;
+    var endNode = brand_Bootstrap.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>();
+    forEachNode.Target = endNode;
+}

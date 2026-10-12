@@ -1,0 +1,44 @@
+(OutSystems.Model.IESpace eSpace) => {
+    /*** creating IClientVariable 'CompanyGoal' ***/
+    var companyGoal = eSpace.CreateClientVariable("CompanyGoal");
+    companyGoal.DataType = eSpace.IntegerType;
+    companyGoal.SetDefaultValue("70");
+    var dashboardData = eSpace.Folders.Named("DashboardData");
+    companyGoal.Folder = dashboardData;
+    /*** creating IClientVariable 'Currency' ***/
+    var currency = eSpace.CreateClientVariable("Currency");
+    currency.DataType = eSpace.TextType;
+    var currency2 = eSpace.Folders.Named("Currency");
+    currency.Folder = currency2;
+    /*** creating IClientVariable 'DecimalSeparator' ***/
+    var decimalSeparator = eSpace.CreateClientVariable("DecimalSeparator");
+    decimalSeparator.DataType = eSpace.TextType;
+    decimalSeparator.Folder = currency2;
+    /*** creating IClientVariable 'GroupSeparator' ***/
+    var groupSeparator = eSpace.CreateClientVariable("GroupSeparator");
+    groupSeparator.DataType = eSpace.TextType;
+    groupSeparator.Folder = currency2;
+    /*** creating IClientVariable 'IsOrderEntrySpecialist' ***/
+    var isOrderEntrySpecialist = eSpace.CreateClientVariable("IsOrderEntrySpecialist");
+    isOrderEntrySpecialist.DataType = eSpace.BooleanType;
+    var role = eSpace.Folders.Named("Role");
+    isOrderEntrySpecialist.Folder = role;
+    /*** creating IClientVariable 'IsOrderManager' ***/
+    var isOrderManager = eSpace.CreateClientVariable("IsOrderManager");
+    isOrderManager.DataType = eSpace.BooleanType;
+    isOrderManager.Folder = role;
+    /*** creating IClientVariable 'PersonalGoal' ***/
+    var personalGoal = eSpace.CreateClientVariable("PersonalGoal");
+    personalGoal.DataType = eSpace.DecimalType;
+    personalGoal.SetDefaultValue("50000.00");
+    personalGoal.Folder = dashboardData;
+    /*** creating IClientVariable 'TargetValue' ***/
+    var targetValue = eSpace.CreateClientVariable("TargetValue");
+    targetValue.DataType = eSpace.DecimalType;
+    targetValue.SetDefaultValue("7500000.00");
+    targetValue.Folder = dashboardData;
+    /*** creating IClientVariable 'TeamGoal' ***/
+    var teamGoal = eSpace.CreateClientVariable("TeamGoal");
+    teamGoal.DataType = eSpace.IntegerType;
+    teamGoal.Folder = dashboardData;
+}

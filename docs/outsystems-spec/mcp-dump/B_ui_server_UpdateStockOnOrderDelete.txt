@@ -1,0 +1,48 @@
+(OutSystems.Model.IESpace eSpace) => {
+    /*** creating IServerAction 'UpdateStockOnOrderDelete' ***/
+    var updateStockOnOrderDelete = eSpace.CreateServerAction("UpdateStockOnOrderDelete");
+    var orderId = updateStockOnOrderDelete.CreateInputParameter("OrderId");
+    var orderManagement_CS = eSpace.References.Named("OrderManagement_CS");
+    var order = orderManagement_CS.Entities.OfType<OutSystems.Model.Data.IServerEntitySignature>().Named("Order");
+    orderId.DataType = order.IdentifierType;
+    var startNode = updateStockOnOrderDelete.CreateNode<OutSystems.Model.Logic.Nodes.IStartNode>();
+    var getOrderById = updateStockOnOrderDelete.CreateNode<OutSystems.Model.Logic.Nodes.IAggregateNode>("GetOrderById");
+    var order2 = getOrderById.AsDatabaseAggregate.CreateSource(order);
+    var orderItem2 = orderManagement_CS.Entities.OfType<OutSystems.Model.Data.IServerEntitySignature>().Named("OrderItem");
+    var orderItem = getOrderById.AsDatabaseAggregate.CreateSource(orderItem2);
+    var orderStatus2 = orderManagement_CS.Entities.OfType<OutSystems.Model.Data.IStaticEntitySignature>().Named("OrderStatus");
+    var orderStatus = getOrderById.AsDatabaseAggregate.CreateSource(orderStatus2);
+    var product2 = orderManagement_CS.Entities.OfType<OutSystems.Model.Data.IServerEntitySignature>().Named("Product");
+    var product = getOrderById.AsDatabaseAggregate.CreateSource(product2);
+    var join = getOrderById.AsDatabaseAggregate.CreateJoin();
+    join.LeftSource = order2;
+    join.RightSource = orderStatus;
+    join.JoinType = OutSystems.Model.Enumerations.JoinType.Inner;
+    join.SetCondition("Order.OrderStatusId = OrderStatus.Id");
+    var join2 = getOrderById.AsDatabaseAggregate.CreateJoin();
+    join2.LeftSource = order2;
+    join2.RightSource = orderItem;
+    join2.JoinType = OutSystems.Model.Enumerations.JoinType.Inner;
+    join2.SetCondition("Order.Id = OrderItem.OrderId");
+    var join3 = getOrderById.AsDatabaseAggregate.CreateJoin();
+    join3.LeftSource = orderItem;
+    join3.RightSource = product;
+    join3.JoinType = OutSystems.Model.Enumerations.JoinType.Inner;
+    join3.SetCondition("OrderItem.ProductId = Product.Id");
+    getOrderById.AsDatabaseAggregate.CreateFilter("OrderId = Order.Id");
+    startNode.Target = getOrderById;
+    var forEachNode = updateStockOnOrderDelete.CreateNode<OutSystems.Model.Logic.Nodes.IForEachNode>();
+    forEachNode.SetRecordList("GetOrderById.List");
+    getOrderById.Target = forEachNode;
+    var updateProductStock = updateStockOnOrderDelete.CreateNode<OutSystems.Model.Logic.Nodes.IExecuteServerActionNode>("UpdateProductStock").ToTheRightOf(forEachNode, 2286);
+    var updateProductStock2 = eSpace.ServerActions.Named("UpdateProductStock");
+    updateProductStock.Action = updateProductStock2;
+    updateProductStock.Target = forEachNode;
+    var productId = updateProductStock2.InputParameters.Named("ProductId");
+    updateProductStock.SetArgumentValue(productId, "GetOrderById.List.Current.Product.Id");
+    var quantity = updateProductStock2.InputParameters.Named("Quantity");
+    updateProductStock.SetArgumentValue(quantity, "GetOrderById.List.Current.OrderItem.Quantity");
+    forEachNode.CycleTarget = updateProductStock;
+    var endNode = updateStockOnOrderDelete.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>();
+    forEachNode.Target = endNode;
+}

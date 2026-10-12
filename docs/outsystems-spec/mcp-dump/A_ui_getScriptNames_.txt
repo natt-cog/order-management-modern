@@ -1,0 +1,1 @@
+[{"Name":"Balloon","Description":"","IsReferenced":false},{"Name":"HighChartsBorderRadiusPlugin","Description":"","IsReferenced":false},{"Name":"OutSystemsUI","Description":"Base JS for OutSystems UI event handling and utility functions.","IsReferenced":true},{"Name":"Tippy_3_0_6","Description":"","IsReferenced":false}]

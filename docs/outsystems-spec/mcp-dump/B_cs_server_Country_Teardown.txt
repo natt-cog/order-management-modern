@@ -1,0 +1,23 @@
+(OutSystems.Model.IESpace eSpace) => {
+    /*** creating IServerAction 'Country_Teardown' ***/
+    var country_Teardown = eSpace.CreateServerAction("Country_Teardown");
+    var bootstrap = eSpace.Folders.Named("Bootstrap");
+    country_Teardown.Folder = bootstrap;
+    var startNode = country_Teardown.CreateNode<OutSystems.Model.Logic.Nodes.IStartNode>();
+    var getCountries = country_Teardown.CreateNode<OutSystems.Model.Logic.Nodes.IAggregateNode>("GetCountries");
+    getCountries.SetMaxRecords("999999999");
+    var country = eSpace.Entities.OfType<OutSystems.Model.Data.IServerEntity>().Named("Country");
+    var addSourceOperation = getCountries.AsDatabaseAggregate.CreateSource(country);
+    startNode.Target = getCountries;
+    var forEachNode = country_Teardown.CreateNode<OutSystems.Model.Logic.Nodes.IForEachNode>().ConnectedBelow(getCountries, 1363);
+    forEachNode.SetRecordList("GetCountries.List");
+    var deleteCountry = country_Teardown.CreateNode<OutSystems.Model.Logic.Nodes.IExecuteServerActionNode>("DeleteCountry").ToTheRightOf(forEachNode, 1824);
+    deleteCountry.Action = country.DeleteAction;
+    deleteCountry.Target = forEachNode;
+    var deleteCountry2 = country.DeleteAction;
+    var id = deleteCountry2.InputParameters.Named("Id");
+    deleteCountry.SetArgumentValue(id, "GetCountries.List.Current.Country.Id");
+    forEachNode.CycleTarget = deleteCountry;
+    var endNode = country_Teardown.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>();
+    forEachNode.Target = endNode;
+}

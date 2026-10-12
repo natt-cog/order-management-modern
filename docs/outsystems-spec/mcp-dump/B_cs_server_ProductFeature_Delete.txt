@@ -1,0 +1,26 @@
+(OutSystems.Model.IESpace eSpace) => {
+    /*** creating IServerAction 'ProductFeature_Delete' ***/
+    var productFeature_Delete = eSpace.CreateServerAction("ProductFeature_Delete");
+    productFeature_Delete.Description = "Action that Deletes a ProductFeature record from the Database.";
+    var productFeature = eSpace.Folders.Named("ProductFeature");
+    productFeature_Delete.Folder = productFeature;
+    productFeature_Delete.Public = true;
+    productFeature_Delete.Shareable = true;
+    var productFeatureId = productFeature_Delete.CreateInputParameter("ProductFeatureId");
+    var productFeature2 = eSpace.Entities.OfType<OutSystems.Model.Data.IServerEntity>().Named("ProductFeature");
+    productFeatureId.DataType = productFeature2.IdentifierType;
+    productFeatureId.Description = "Id of the record to be deleted from the Database.";
+    var startNode = productFeature_Delete.CreateNode<OutSystems.Model.Logic.Nodes.IStartNode>();
+    var ifNode = productFeature_Delete.CreateNode<OutSystems.Model.Logic.Nodes.IIfNode>().ConnectedBelow(startNode, 1936);
+    ifNode.SetCondition("ProductFeatureId <> NullIdentifier()");
+    ifNode.Label = "Valid ProductFeatureId?";
+    var endNode = productFeature_Delete.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>().ToTheRightOf(ifNode, 1820);
+    ifNode.FalseTarget = endNode;
+    var deleteProductFeature = productFeature_Delete.CreateNode<OutSystems.Model.Logic.Nodes.IExecuteServerActionNode>("DeleteProductFeature").Below(ifNode, 1824);
+    deleteProductFeature.Action = productFeature2.DeleteAction;
+    var deleteProductFeature2 = productFeature2.DeleteAction;
+    var id = deleteProductFeature2.InputParameters.Named("Id");
+    deleteProductFeature.SetArgumentValue(id, "ProductFeatureId");
+    ifNode.TrueTarget = deleteProductFeature;
+    var endNode2 = productFeature_Delete.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>().ConnectedBelow(deleteProductFeature, 1824);
+}

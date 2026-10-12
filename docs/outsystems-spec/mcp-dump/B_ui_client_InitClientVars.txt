@@ -1,0 +1,28 @@
+(OutSystems.Model.IESpace eSpace) => {
+    /*** creating IClientAction 'InitClientVars' ***/
+    var initClientVars = eSpace.CreateClientAction("InitClientVars");
+    var startNode = initClientVars.CreateNode<OutSystems.Model.Logic.Nodes.IStartNode>();
+    var setUserRoles = initClientVars.CreateNode<OutSystems.Model.Logic.Nodes.IExecuteClientActionNode>("SetUserRoles");
+    var setUserRoles2 = eSpace.ClientActions.Named("SetUserRoles");
+    setUserRoles.Action = setUserRoles2;
+    startNode.Target = setUserRoles;
+    var siteProperty_GetAll = initClientVars.CreateNode<OutSystems.Model.Logic.Nodes.IExecuteServerActionNode>("SiteProperty_GetAll");
+    var orderManagement_CS = eSpace.References.Named("OrderManagement_CS");
+    var siteProperty_GetAll2 = orderManagement_CS.ServerActions.Named("SiteProperty_GetAll");
+    siteProperty_GetAll.Action = siteProperty_GetAll2;
+    setUserRoles.Target = siteProperty_GetAll;
+    var assignNode = initClientVars.CreateNode<OutSystems.Model.Logic.Nodes.IAssignNode>();
+    assignNode.Label = "Set Currency Site Properties";
+    var assignment = assignNode.CreateAssignment("Client.Currency", "SiteProperty_GetAll.Currency");
+    var assignment2 = assignNode.CreateAssignment("Client.DecimalSeparator", "SiteProperty_GetAll.DecimalSeparator");
+    var assignment3 = assignNode.CreateAssignment("Client.GroupSeparator", "SiteProperty_GetAll.GroupSeparator");
+    siteProperty_GetAll.Target = assignNode;
+    var assignNode2 = initClientVars.CreateNode<OutSystems.Model.Logic.Nodes.IAssignNode>();
+    assignNode2.Label = "Client Vars";
+    var assignment4 = assignNode2.CreateAssignment("Client.TargetValue", "SiteProperty_GetAll.Dashboard_TargetValue");
+    var assignment5 = assignNode2.CreateAssignment("Client.PersonalGoal", "SiteProperty_GetAll.Dashboard_PersonalGoal");
+    var assignment6 = assignNode2.CreateAssignment("Client.TeamGoal", "SiteProperty_GetAll.Dashboard_TeamGoalPercent");
+    assignNode.Target = assignNode2;
+    var endNode = initClientVars.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>();
+    assignNode2.Target = endNode;
+}

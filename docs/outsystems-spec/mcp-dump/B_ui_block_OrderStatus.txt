@@ -1,0 +1,27 @@
+(OutSystems.Model.UI.Mobile.IMobileFlow order) => {
+    /*** creating IMobileBlock 'OrderStatus' ***/
+    var orderStatus = order.CreateBlock("OrderStatus");
+    var getOrderStatusById = orderStatus.CreateScreenAggregate(false, "GetOrderStatusById");
+    var eSpace = order.GetESpace();
+    var orderManagement_CS = eSpace.References.Named("OrderManagement_CS");
+    var orderStatus3 = orderManagement_CS.Entities.OfType<OutSystems.Model.Data.IStaticEntitySignature>().Named("OrderStatus");
+    var orderStatus2 = getOrderStatusById.AsDatabaseAggregate.CreateSource(orderStatus3);
+    getOrderStatusById.AsDatabaseAggregate.CreateFilter("OrderStatus.Id = OrderStatusId");
+    var orderStatusId = orderStatus.CreateInputParameter("OrderStatusId");
+    orderStatusId.DataType = orderStatus3.IdentifierType;
+    var onParametersChanged = orderStatus.CreateScreenAction("OnParametersChanged");
+    var startNode = onParametersChanged.CreateNode<OutSystems.Model.Logic.Nodes.IStartNode>();
+    orderStatus.OnParametersChanged.Destination = onParametersChanged;
+    var refreshDataNode = onParametersChanged.CreateNode<OutSystems.Model.Logic.Nodes.IRefreshDataNode>();
+    refreshDataNode.DataSource = getOrderStatusById;
+    refreshDataNode.SetMaxRecords("50");
+    startNode.Target = refreshDataNode;
+    var endNode = onParametersChanged.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>();
+    refreshDataNode.Target = endNode;
+    var expression = orderStatus.CreateWidget<ServiceStudio.Plugin.NRWidgets.IExpression>();
+    expression.SetStyle("\"label-status font-size-s margin-left-s\"");
+    expression.SetValue("GetOrderStatusById.List.Current.OrderStatus.Label\n");
+    var extendedProperty = expression.CreateExtendedProperty();
+    extendedProperty.Property = "style";
+    extendedProperty.SetValue("\"border-color: \" + GetOrderStatusById.List.Current.OrderStatus.ColorRGB + \";\ncolor: \" + GetOrderStatusById.List.Current.OrderStatus.ColorRGB + \";\"");
+}

@@ -1,0 +1,33 @@
+(OutSystems.Model.IESpace eSpace) => {
+    /*** creating IServerAction 'Dashboard_GetHistory' ***/
+    var dashboard_GetHistory = eSpace.CreateServerAction("Dashboard_GetHistory");
+    dashboard_GetHistory.CacheInMinutes = 5;
+    var dashboard = eSpace.Folders.Named("Dashboard");
+    dashboard_GetHistory.Folder = dashboard;
+    dashboard_GetHistory.Public = true;
+    dashboard_GetHistory.Shareable = true;
+    var startNode = dashboard_GetHistory.CreateNode<OutSystems.Model.Logic.Nodes.IStartNode>();
+    var getOrders = dashboard_GetHistory.CreateNode<OutSystems.Model.Logic.Nodes.ISQLNode>("GetOrders");
+    getOrders.Statement = "SELECT \n    MONTH({Order}.[ExpectedClosedOn]),\n    SUM({Order}.[TotalAmount])\nFROM\n    {Order}\nWHERE\n    {Order}.[IsActive] = 1\n    AND {Order}.[OrderStatusId] = @OrderStatusId\n    AND {Order}.[ExpectedClosedOn] >= @StartDate\n    AND {Order}.[ExpectedClosedOn] <= @EndDate\nGROUP BY MONTH({Order}.[ExpectedClosedOn])";
+    var orderStatusId = getOrders.CreateInputParameter("OrderStatusId");
+    var orderStatus = eSpace.Entities.OfType<OutSystems.Model.Data.IStaticEntity>().Named("OrderStatus");
+    orderStatusId.DataType = orderStatus.IdentifierType;
+    var startDate = getOrders.CreateInputParameter("StartDate");
+    startDate.DataType = eSpace.DateType;
+    var endDate = getOrders.CreateInputParameter("EndDate");
+    endDate.DataType = eSpace.DateType;
+    var orderHistory = eSpace.Structures.Named("OrderHistory");
+    var orderHistory2 = getOrders.CreateOutput(orderHistory, "OrderHistory");
+    startNode.Target = getOrders;
+    var assignNode = dashboard_GetHistory.CreateNode<OutSystems.Model.Logic.Nodes.IAssignNode>().ConnectedBelow(getOrders, 1368);
+    var assignment = assignNode.CreateAssignment("ChartData", "GetOrders.List mapTo { DataPoint.Label: NewDate(Year(CurrDate()), OrderHistory.Month, 1), DataPoint.Value: OrderHistory.Amount, DataPoint.DataSeriesName: FormatDateTime(NewDate(Year(CurrDate()), OrderHistory.Month,1), \"MMMM\"), DataPoint.Tooltip: FormatDateTime(NewDate(Year(CurrDate()), OrderHistory.Month,1), \"MMMM\") + \", \" + Decimal_FormatPretty(OrderHistory.Amount, 1, Site.Currency)\n\n, DataPoint.Color: \"#98BCE0\" }");
+    getOrders.SetArgumentValue(endDate, "AddDays(NewDate(2021, 1, 1), -1)");
+    getOrders.SetArgumentValue(startDate, "NewDate(2020,1,1)");
+    getOrders.SetArgumentValue(orderStatusId, "Entities.OrderStatus.Closed");
+    var endNode = dashboard_GetHistory.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>();
+    assignNode.Target = endNode;
+    var chartData = dashboard_GetHistory.CreateOutputParameter("ChartData");
+    var outSystemsChartsWeb = eSpace.References.Named("OutSystemsChartsWeb");
+    var dataPoint = outSystemsChartsWeb.Structures.Named("DataPoint");
+    chartData.DataType = eSpace.GetOrCreateListType(eSpace.GetOrCreateAnonymousStructure(Tuple.Create<string, ITypeSignature>("DataPoint", dataPoint)));
+}

@@ -1,0 +1,34 @@
+(OutSystems.Model.IESpace eSpace) => {
+    /*** creating IServerAction 'UpdateOrderAmount' ***/
+    var updateOrderAmount = eSpace.CreateServerAction("UpdateOrderAmount");
+    var orderId = updateOrderAmount.CreateInputParameter("OrderId");
+    var orderManagement_CS = eSpace.References.Named("OrderManagement_CS");
+    var order = orderManagement_CS.Entities.OfType<OutSystems.Model.Data.IServerEntitySignature>().Named("Order");
+    orderId.DataType = order.IdentifierType;
+    var startNode = updateOrderAmount.CreateNode<OutSystems.Model.Logic.Nodes.IStartNode>();
+    var getOrderById = updateOrderAmount.CreateNode<OutSystems.Model.Logic.Nodes.IAggregateNode>("GetOrderById");
+    getOrderById.SetMaxRecords("1");
+    var order2 = getOrderById.AsDatabaseAggregate.CreateSource(order);
+    getOrderById.AsDatabaseAggregate.CreateFilter("Order.Id = OrderId");
+    startNode.Target = getOrderById;
+    var totalAmount = updateOrderAmount.CreateNode<OutSystems.Model.Logic.Nodes.ISQLNode>("TotalAmount").ConnectedBelow(getOrderById, 1373);
+    totalAmount.Statement = "select \n    SUM({Product}.[Price] * {OrderItem}.[Quantity] * ((100 - {OrderItem}.[Discount])/100)) Amount\nfrom \n    {OrderItem} \n    INNER JOIN {Product} ON {OrderItem}.[ProductId] = {Product}.[Id]\nwhere \n    {OrderItem}.[OrderId] = @OrderId \n\n";
+    var orderId2 = totalAmount.CreateInputParameter("OrderId");
+    orderId2.DataType = order.IdentifierType;
+    var decimal = eSpace.Structures.Named("Decimal");
+    var decimal2 = totalAmount.CreateOutput(decimal, "Decimal");
+    var assignNode = updateOrderAmount.CreateNode<OutSystems.Model.Logic.Nodes.IAssignNode>().ConnectedBelow(totalAmount, 1357);
+    assignNode.Label = "Total Amount Cache";
+    var assignment = assignNode.CreateAssignment("GetOrderById.List.Current.Order.TotalAmount", "TotalAmount.List.Current.Decimal.Decimal");
+    var assignment2 = assignNode.CreateAssignment("GetOrderById.List.Current.Order.UpdatedOn", "CurrDateTime()");
+    totalAmount.SetArgumentValue(orderId2, "OrderId");
+    var order_Save = updateOrderAmount.CreateNode<OutSystems.Model.Logic.Nodes.IExecuteServerActionNode>("Order_Save").ConnectedBelow(assignNode, 1368);
+    var order_Save2 = orderManagement_CS.ServerActions.Named("Order_Save");
+    order_Save.Action = order_Save2;
+    var orderRecord = order_Save2.InputParameters.Named("OrderRecord");
+    order_Save.SetArgumentValue(orderRecord, "GetOrderById.List.Current");
+    var invoker = order_Save2.InputParameters.Named("Invoker");
+    order_Save.SetArgumentValue(invoker, "GetUserId()");
+    var endNode = updateOrderAmount.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>();
+    order_Save.Target = endNode;
+}

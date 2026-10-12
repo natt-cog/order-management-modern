@@ -1,0 +1,30 @@
+(OutSystems.Model.IESpace eSpace) => {
+    /*** creating IServerAction 'ProductPicture_Save' ***/
+    var productPicture_Save = eSpace.CreateServerAction("ProductPicture_Save");
+    productPicture_Save.Description = "Saves an product picture record";
+    var productPicture = eSpace.Folders.Named("ProductPicture");
+    productPicture_Save.Folder = productPicture;
+    productPicture_Save.Public = true;
+    productPicture_Save.Shareable = true;
+    var productPictureRecord = productPicture_Save.CreateInputParameter("ProductPictureRecord");
+    var productPicture2 = eSpace.Entities.OfType<OutSystems.Model.Data.IServerEntity>().Named("ProductPicture");
+    productPictureRecord.DataType = productPicture2;
+    var startNode = productPicture_Save.CreateNode<OutSystems.Model.Logic.Nodes.IStartNode>();
+    var productPicture_Validate = productPicture_Save.CreateNode<OutSystems.Model.Logic.Nodes.IExecuteServerActionNode>("ProductPicture_Validate");
+    var productPicture_Validate2 = eSpace.ServerActions.Named("ProductPicture_Validate");
+    productPicture_Validate.Action = productPicture_Validate2;
+    var productPictureRecord2 = productPicture_Validate2.InputParameters.Named("ProductPictureRecord");
+    productPicture_Validate.SetArgumentValue(productPictureRecord2, "ProductPictureRecord");
+    startNode.Target = productPicture_Validate;
+    var createOrUpdateProductPicture = productPicture_Save.CreateNode<OutSystems.Model.Logic.Nodes.IExecuteServerActionNode>("CreateOrUpdateProductPicture").ConnectedBelow(productPicture_Validate, 1368);
+    createOrUpdateProductPicture.Action = productPicture2.CreateOrUpdateAction;
+    var createOrUpdateProductPicture2 = productPicture2.CreateOrUpdateAction;
+    var source = createOrUpdateProductPicture2.InputParameters.Named("Source");
+    createOrUpdateProductPicture.SetArgumentValue(source, "ProductPictureRecord");
+    var assignNode = productPicture_Save.CreateNode<OutSystems.Model.Logic.Nodes.IAssignNode>().ConnectedBelow(createOrUpdateProductPicture, 1368);
+    var assignment = assignNode.CreateAssignment("ProductPictureId", "CreateOrUpdateProductPicture.Id");
+    var endNode = productPicture_Save.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>();
+    assignNode.Target = endNode;
+    var productPictureId = productPicture_Save.CreateOutputParameter("ProductPictureId");
+    productPictureId.DataType = productPicture2.IdentifierType;
+}

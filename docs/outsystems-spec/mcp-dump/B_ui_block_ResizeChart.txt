@@ -1,0 +1,24 @@
+(OutSystems.Model.UI.Mobile.IMobileFlow utils) => {
+    /*** creating IMobileBlock 'ResizeChart' ***/
+    var resizeChart = utils.CreateBlock("ResizeChart");
+    var onDestroy = resizeChart.CreateScreenAction("OnDestroy");
+    var startNode = onDestroy.CreateNode<OutSystems.Model.Logic.Nodes.IStartNode>();
+    resizeChart.OnDestroy.Destination = onDestroy;
+    var onReady = resizeChart.CreateScreenAction("OnReady");
+    var startNode2 = onReady.CreateNode<OutSystems.Model.Logic.Nodes.IStartNode>();
+    var commentNode = onReady.CreateNode<OutSystems.Model.Logic.Nodes.ICommentNode>();
+    commentNode.Text = "This action runs when the Block is ready, i.e. after its first render.\n\nDo:\n- Initialize external components;\n- Access and manipulate the Block\'s DOM (e.g. define handlers for JavaScript events).\n\nDon\'t:\n- Call slow actions (e.g. server calls).\n\n<a href=\"30093\">Check the documentation for examples and more information.</a>";
+    var resize = onReady.CreateNode<OutSystems.Model.Logic.Nodes.IJavaScriptNode>("Resize");
+    resize.JavaScript = "window.resizeHandler = function () {\n   if(Highcharts !== undefined && Highcharts) {\n       Highcharts.charts.forEach(function(chart,index){\n           var parent = chart.container.parentElement.parentElement;\n       });\n       if(!window.resizeTimeoutRef) {\n           clearTimeout(window.resizeTimeoutRef);\n           window.resizeTimeoutRef = null;\n           window.resizeTimeoutRef = setTimeout(resizeToParent, 600, Highcharts.charts);\n       }\n   }\n};\n\nfunction resizeToParent(charts){\n   charts.forEach(function(chart){\n        if(typeof chart.container.parentElement.parentElement !== \'undefined\'){\n            var parent = chart.container.parentElement.parentElement;\n            if (typeof parent !== \'undefined\') chart.setSize(parent.clientWidth - 10);\n        }\n   });\n   window.resizeTimeoutRef = null;\n}\n\nwindow.addEventListener(\'resize\', window.resizeHandler,true);";
+    var endNode = onReady.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>();
+    resizeChart.OnReady.Destination = onReady;
+    var removeListeners = onDestroy.CreateNode<OutSystems.Model.Logic.Nodes.IJavaScriptNode>("RemoveListeners");
+    removeListeners.JavaScript = "window.removeEventListener(\'resize\', window.resizeHandler, true);";
+    startNode.Target = removeListeners;
+    startNode2.Target = resize;
+    resize.Target = endNode;
+    var endNode2 = onDestroy.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>();
+    removeListeners.Target = endNode2;
+    var commentNode2 = onDestroy.CreateNode<OutSystems.Model.Logic.Nodes.ICommentNode>();
+    commentNode2.Text = "This action will run when this Block is being destroyed, i.e., before leaving the screen.\n\nYou can use it to avoid leaving any footprint in the application (e.g. remove event listeners).\n\n<a href=\"30095\">Check the online help for examples and more information.</a>";
+}

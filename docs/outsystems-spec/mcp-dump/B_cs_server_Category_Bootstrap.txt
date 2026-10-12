@@ -1,0 +1,29 @@
+(OutSystems.Model.IESpace eSpace) => {
+    /*** creating IServerAction 'Category_Bootstrap' ***/
+    var category_Bootstrap = eSpace.CreateServerAction("Category_Bootstrap");
+    var bootstrap = eSpace.Folders.Named("Bootstrap");
+    category_Bootstrap.Folder = bootstrap;
+    var adminUserId = category_Bootstrap.CreateInputParameter("AdminUserId");
+    var _System_ = eSpace.References.Named("(System)");
+    var user = _System_.Entities.OfType<OutSystems.Model.Data.IServerEntitySignature>().Named("User");
+    adminUserId.DataType = user.IdentifierType;
+    var startNode = category_Bootstrap.CreateNode<OutSystems.Model.Logic.Nodes.IStartNode>();
+    var excelToRecordList = category_Bootstrap.CreateNode<OutSystems.Model.Logic.Nodes.IExcelToRecordListNode>("ExcelToRecordList");
+    var productCategoryExcel = eSpace.Structures.Named("ProductCategoryExcel");
+    excelToRecordList.DataType = eSpace.GetOrCreateListType(eSpace.GetOrCreateAnonymousStructure(Tuple.Create<string, ITypeSignature>("ProductCategoryExcel", productCategoryExcel)));
+    excelToRecordList.SetFileContent("Resources.Categories_xlsx.Content");
+    startNode.Target = excelToRecordList;
+    var forEachNode = category_Bootstrap.CreateNode<OutSystems.Model.Logic.Nodes.IForEachNode>().ConnectedBelow(excelToRecordList, 1368);
+    forEachNode.SetRecordList("ExcelToRecordList");
+    var productCategory_Save = category_Bootstrap.CreateNode<OutSystems.Model.Logic.Nodes.IExecuteServerActionNode>("ProductCategory_Save");
+    var productCategory_Save2 = eSpace.ServerActions.Named("ProductCategory_Save");
+    productCategory_Save.Action = productCategory_Save2;
+    productCategory_Save.Target = forEachNode;
+    var invoker = productCategory_Save2.InputParameters.Named("Invoker");
+    productCategory_Save.SetArgumentValue(invoker, "AdminUserId");
+    var productCategoryRecord = productCategory_Save2.InputParameters.Named("ProductCategoryRecord");
+    productCategory_Save.SetArgumentValue(productCategoryRecord, "{ Id: NullIdentifier(), Code: \"\", Name: ExcelToRecordList.Current.ProductCategoryExcel.Name, Description: ExcelToRecordList.Current.ProductCategoryExcel.Description, CreatedBy: AdminUserId, CreatedOn: CurrDateTime(), UpdatedBy: AdminUserId, UpdatedOn: CurrDateTime(), IsActive: True }");
+    forEachNode.CycleTarget = productCategory_Save;
+    var endNode = category_Bootstrap.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>().Below(forEachNode, 1596);
+    forEachNode.Target = endNode;
+}

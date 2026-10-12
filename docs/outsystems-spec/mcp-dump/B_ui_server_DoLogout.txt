@@ -1,0 +1,16 @@
+(OutSystems.Model.IESpace eSpace) => {
+    /*** creating IServerAction 'DoLogout' ***/
+    var doLogout = eSpace.CreateServerAction("DoLogout");
+    var authentication = eSpace.Folders.Named("Authentication");
+    doLogout.Folder = authentication;
+    var startNode = doLogout.CreateNode<OutSystems.Model.Logic.Nodes.IStartNode>();
+    var user_Logout = doLogout.CreateNode<OutSystems.Model.Logic.Nodes.IExecuteServerActionNode>("User_Logout");
+    var users = eSpace.References.Named("Users");
+    var user_Logout2 = users.ServerActions.Named("User_Logout");
+    user_Logout.Action = user_Logout2;
+    startNode.Target = user_Logout;
+    var endNode = doLogout.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>();
+    user_Logout.Target = endNode;
+    var commentNode = doLogout.CreateNode<OutSystems.Model.Logic.Nodes.ICommentNode>();
+    commentNode.Text = "This action alllows you to define specific validation logic \nover the parameters supplied by the device before \ninvoking the User Provider logout action.";
+}

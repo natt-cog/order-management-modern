@@ -1,0 +1,27 @@
+(OutSystems.Model.IESpace eSpace) => {
+    /*** creating IServerAction 'SiteProperty_GetDashboard' ***/
+    var siteProperty_GetDashboard = eSpace.CreateServerAction("SiteProperty_GetDashboard");
+    siteProperty_GetDashboard.Description = "Returns the site properties associated with Dashboard";
+    var siteProperties = eSpace.Folders.Named("SiteProperties");
+    siteProperty_GetDashboard.Folder = siteProperties;
+    var startNode = siteProperty_GetDashboard.CreateNode<OutSystems.Model.Logic.Nodes.IStartNode>();
+    var assignNode = siteProperty_GetDashboard.CreateNode<OutSystems.Model.Logic.Nodes.IAssignNode>();
+    assignNode.Label = "Dashboard";
+    var assignment = assignNode.CreateAssignment("Dashboard_PersonalGoal", "Site.Dashboard_PersonalGoal");
+    var assignment2 = assignNode.CreateAssignment("Dashboard_TeamGoalPercent", "Site.Dashboard_TeamGoalPercent");
+    var assignment3 = assignNode.CreateAssignment("Dashboard_TargetValue", "Site.Dashboard_TargetValue");
+    startNode.Target = assignNode;
+    var endNode = siteProperty_GetDashboard.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>();
+    assignNode.Target = endNode;
+    var dashboard_PersonalGoal = siteProperty_GetDashboard.CreateOutputParameter("Dashboard_PersonalGoal");
+    dashboard_PersonalGoal.DataType = eSpace.CurrencyType;
+    dashboard_PersonalGoal.SetDefaultValue("50000");
+    var dashboard_TeamGoalPercent = siteProperty_GetDashboard.CreateOutputParameter("Dashboard_TeamGoalPercent");
+    dashboard_TeamGoalPercent.DataType = eSpace.IntegerType;
+    dashboard_TeamGoalPercent.SetDefaultValue("54");
+    dashboard_TeamGoalPercent.Description = "Percent of company goal for team goal";
+    var dashboard_TargetValue = siteProperty_GetDashboard.CreateOutputParameter("Dashboard_TargetValue");
+    dashboard_TargetValue.DataType = eSpace.CurrencyType;
+    dashboard_TargetValue.SetDefaultValue("7500000");
+    dashboard_TargetValue.Description = "Target value to be shown on dashboard";
+}

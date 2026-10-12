@@ -1,0 +1,48 @@
+(OutSystems.Model.IESpace eSpace) => {
+    /*** creating IServerAction 'Opportunity_Bootstrap' ***/
+    var opportunity_Bootstrap = eSpace.CreateServerAction("Opportunity_Bootstrap");
+    var bootstrap = eSpace.Folders.Named("Bootstrap");
+    opportunity_Bootstrap.Folder = bootstrap;
+    var entryOrderUserId = opportunity_Bootstrap.CreateInputParameter("EntryOrderUserId");
+    var _System_ = eSpace.References.Named("(System)");
+    var user = _System_.Entities.OfType<OutSystems.Model.Data.IServerEntitySignature>().Named("User");
+    entryOrderUserId.DataType = user.IdentifierType;
+    var startNode = opportunity_Bootstrap.CreateNode<OutSystems.Model.Logic.Nodes.IStartNode>();
+    var excelToRecordList = opportunity_Bootstrap.CreateNode<OutSystems.Model.Logic.Nodes.IExcelToRecordListNode>("ExcelToRecordList");
+    var opportunityExcel = eSpace.Structures.Named("OpportunityExcel");
+    excelToRecordList.DataType = eSpace.GetOrCreateListType(eSpace.GetOrCreateAnonymousStructure(Tuple.Create<string, ITypeSignature>("OpportunityExcel", opportunityExcel)));
+    excelToRecordList.SetFileContent("Resources.Opportunities_xlsx.Content");
+    startNode.Target = excelToRecordList;
+    var forEachNode = opportunity_Bootstrap.CreateNode<OutSystems.Model.Logic.Nodes.IForEachNode>();
+    forEachNode.SetRecordList("ExcelToRecordList");
+    excelToRecordList.Target = forEachNode;
+    var getAccount = opportunity_Bootstrap.CreateNode<OutSystems.Model.Logic.Nodes.IAggregateNode>("GetAccount").ToTheRightOf(forEachNode, 1361);
+    getAccount.SetMaxRecords("1");
+    var account2 = eSpace.Entities.OfType<OutSystems.Model.Data.IServerEntity>().Named("Account");
+    var account = getAccount.AsDatabaseAggregate.CreateSource(account2);
+    getAccount.AsDatabaseAggregate.CreateFilter("ToLower(Account.Code) = ToLower(Trim(ExcelToRecordList.Current.OpportunityExcel.Account))");
+    getAccount.AsDatabaseAggregate.CreateFilter("Account.IsActive = True ");
+    forEachNode.CycleTarget = getAccount;
+    var endNode = opportunity_Bootstrap.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>().Below(forEachNode, 1600);
+    forEachNode.Target = endNode;
+    var getStage = opportunity_Bootstrap.CreateNode<OutSystems.Model.Logic.Nodes.IAggregateNode>("GetStage").ConnectedToTheRightOf(getAccount, 1154);
+    getStage.SetMaxRecords("1");
+    var opportunityStage2 = eSpace.Entities.OfType<OutSystems.Model.Data.IStaticEntity>().Named("OpportunityStage");
+    var opportunityStage = getStage.AsDatabaseAggregate.CreateSource(opportunityStage2);
+    getStage.AsDatabaseAggregate.CreateFilter("OpportunityStage.IsActive = True");
+    getStage.AsDatabaseAggregate.CreateFilter("ToLower(OpportunityStage.Label) = ToLower(Trim(ExcelToRecordList.Current.OpportunityExcel.Stage))");
+    var getType = opportunity_Bootstrap.CreateNode<OutSystems.Model.Logic.Nodes.IAggregateNode>("GetType").ConnectedBelow(getStage, 1600);
+    getType.SetMaxRecords("1");
+    var opportunityType2 = eSpace.Entities.OfType<OutSystems.Model.Data.IStaticEntity>().Named("OpportunityType");
+    var opportunityType = getType.AsDatabaseAggregate.CreateSource(opportunityType2);
+    getType.AsDatabaseAggregate.CreateFilter("OpportunityType.IsActive = True");
+    getType.AsDatabaseAggregate.CreateFilter("ToLower(OpportunityType.Label) = ToLower(Trim(ExcelToRecordList.Current.OpportunityExcel.Type))");
+    var opportunity_Save = opportunity_Bootstrap.CreateNode<OutSystems.Model.Logic.Nodes.IExecuteServerActionNode>("Opportunity_Save").ConnectedToTheLeftOf(getType, 1143);
+    var opportunity_Save2 = eSpace.ServerActions.Named("Opportunity_Save");
+    opportunity_Save.Action = opportunity_Save2;
+    opportunity_Save.Target = forEachNode;
+    var opportunityRecord = opportunity_Save2.InputParameters.Named("OpportunityRecord");
+    opportunity_Save.SetArgumentValue(opportunityRecord, "{ Id: NullIdentifier(), AccountId: GetAccount.List.Current.Account.Id, Name: ExcelToRecordList.Current.OpportunityExcel.Name, Description: ExcelToRecordList.Current.OpportunityExcel.Description, OpportunityTypeId: GetType.List.Current.OpportunityType.Id, OpportunityStageId: GetStage.List.Current.OpportunityStage.Id, Amount: ExcelToRecordList.Current.OpportunityExcel.Amount, Probability: ExcelToRecordList.Current.OpportunityExcel.Probability, ExpectedRevenue: ExcelToRecordList.Current.OpportunityExcel.ExpectedRevenue, CloseOn: ExcelToRecordList.Current.OpportunityExcel.CloseOn, CreatedBy: EntryOrderUserId, CreatedOn: CurrDateTime(), UpdatedBy: EntryOrderUserId, UpdatedOn: CurrDateTime(), IsActive: True }");
+    var invoker = opportunity_Save2.InputParameters.Named("Invoker");
+    opportunity_Save.SetArgumentValue(invoker, "EntryOrderUserId");
+}

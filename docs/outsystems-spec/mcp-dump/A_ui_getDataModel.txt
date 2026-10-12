@@ -1,0 +1,141 @@
+(OutSystems.Model.IReference orderManagement_CS) => {
+    // IServerEntitySignature OrderManagement_CS/Account
+    var eSpace = orderManagement_CS.GetESpace();
+    var account = (OutSystems.Model.Data.IServerEntitySignature)eSpace.AddDependency(Services.ModelServices.ParseGlobalKey("h4hOdXSBM+8wZIwdkF8FYg*tHFlp6pmBE2a+lFH9mlksw"));
+    // IServerEntitySignature (System)/Activity
+    var activity = (OutSystems.Model.Data.IServerEntitySignature)eSpace.AddDependency(Services.ModelServices.ParseGlobalKey("uXCIR2Atc0+es3zYuZSnNw*hg460+gk0UGzMRTFlEBTOQ"));
+    // IServerEntitySignature OrderManagement_CS/Brand
+    var brand = (OutSystems.Model.Data.IServerEntitySignature)eSpace.AddDependency(Services.ModelServices.ParseGlobalKey("h4hOdXSBM+8wZIwdkF8FYg*nAAFC6+vwU2CwxArdSM3iA"));
+    // IStaticEntitySignature OutSystemsUI/BreakColumns
+    var breakColumns = (OutSystems.Model.Data.IStaticEntitySignature)eSpace.AddDependency(Services.ModelServices.ParseGlobalKey("Kn_hixxDWEm4lMd7mIpycQ*k0X3aMSlZU6Fi_RCEerxIg"));
+    // IStaticEntitySignature OutSystemsUI/Color
+    var color = (OutSystems.Model.Data.IStaticEntitySignature)eSpace.AddDependency(Services.ModelServices.ParseGlobalKey("Kn_hixxDWEm4lMd7mIpycQ*px1ty9Qm2UW8IppMSC5s4g"));
+    // IServerEntitySignature OrderManagement_CS/Country
+    var country = (OutSystems.Model.Data.IServerEntitySignature)eSpace.AddDependency(Services.ModelServices.ParseGlobalKey("h4hOdXSBM+8wZIwdkF8FYg*gzWmCdYVbUiAuCuFC9XeOw"));
+    // IStaticEntitySignature OutSystemsUI/Direction
+    var direction = (OutSystems.Model.Data.IStaticEntitySignature)eSpace.AddDependency(Services.ModelServices.ParseGlobalKey("Kn_hixxDWEm4lMd7mIpycQ*hoBiZ4t_hE+peKnT9UeWnA"));
+    // IServerEntitySignature (System)/Espace
+    var espace = (OutSystems.Model.Data.IServerEntitySignature)eSpace.AddDependency(Services.ModelServices.ParseGlobalKey("uXCIR2Atc0+es3zYuZSnNw*Peat6jeAoS7k0hgUWu_7Nw"));
+    // IServerEntitySignature (System)/Group
+    var group = (OutSystems.Model.Data.IServerEntitySignature)eSpace.AddDependency(Services.ModelServices.ParseGlobalKey("uXCIR2Atc0+es3zYuZSnNw*77Uo0HdEN06fos3dfg5xRg"));
+    // IStaticEntitySignature OutSystemsUI/GutterSize
+    var gutterSize = (OutSystems.Model.Data.IStaticEntitySignature)eSpace.AddDependency(Services.ModelServices.ParseGlobalKey("Kn_hixxDWEm4lMd7mIpycQ*6KGBLqRP0EupRWU1KZmwvg"));
+    // IStaticEntitySignature RichWidgets/IconName
+    var iconName = (OutSystems.Model.Data.IStaticEntitySignature)eSpace.AddDependency(Services.ModelServices.ParseGlobalKey("sxSgg9oQRkKKlyKvezqjKg*eC2rFD3CEkqrWPbgVnVC7g"));
+    // IStaticEntitySignature OutSystemsCharts/LegendPosition_v1
+    var legendPosition_v1 = (OutSystems.Model.Data.IStaticEntitySignature)eSpace.AddDependency(Services.ModelServices.ParseGlobalKey("Iw63OPxQEEeAzzaCqdyZig*j1VVb1yau0m8MoGAwKwNcw"));
+    /*** creating IStaticEntity 'MenuItem' ***/
+    var menuItem = eSpace.CreateStaticEntity("MenuItem");
+    menuItem.ExposeReadOnly = true;
+    menuItem.Label = "Menu Item";
+    menuItem.LabelPlural = "Menu Items";
+    menuItem.Public = true;
+    menuItem.Shareable = true;
+    menuItem.UpdateBehavior = OutSystems.Model.Enumerations.UpdateEntityBehaviorType.Optimized;
+    menuItem.UseTranslations = true;
+    var id = menuItem.CreateAttribute("Id");
+    id.DataType = eSpace.IntegerType;
+    id.IsAutoNumber = OutSystems.Model.Enumerations.AutoNumber.Yes;
+    id.Label = "Id";
+    menuItem.IdentifierAttribute = id;
+    var caption = menuItem.CreateAttribute("Caption");
+    caption.DataType = eSpace.TextType;
+    caption.IsMandatory = true;
+    caption.Label = "Caption";
+    caption.Length = 50;
+    menuItem.LabelAttribute = caption;
+    var order = menuItem.CreateAttribute("Order");
+    order.DataType = eSpace.IntegerType;
+    order.IsMandatory = true;
+    order.Label = "Order";
+    menuItem.OrderByAttribute = order;
+    var staticEntityRecord = menuItem.CreateRecord();
+    staticEntityRecord.Identifier = "Opportunites";
+    staticEntityRecord.SetAttributeValue(order, "6");
+    staticEntityRecord.SetAttributeValue(caption, "\"Opportunities\"");
+    staticEntityRecord.SetAttributeValue(id, null);
+    var staticEntityRecord2 = menuItem.CreateRecord();
+    staticEntityRecord2.Identifier = "Accounts";
+    staticEntityRecord2.SetAttributeValue(id, null);
+    staticEntityRecord2.SetAttributeValue(caption, "\"Accounts\"");
+    staticEntityRecord2.SetAttributeValue(order, "4");
+    var staticEntityRecord3 = menuItem.CreateRecord();
+    staticEntityRecord3.Identifier = "Invoices";
+    staticEntityRecord3.SetAttributeValue(order, "5");
+    staticEntityRecord3.SetAttributeValue(id, null);
+    staticEntityRecord3.SetAttributeValue(caption, "\"Invoices\"");
+    var staticEntityRecord4 = menuItem.CreateRecord();
+    staticEntityRecord4.Identifier = "Dashboard";
+    staticEntityRecord4.SetAttributeValue(caption, "\"Dashboard\"");
+    staticEntityRecord4.SetAttributeValue(order, "1");
+    staticEntityRecord4.SetAttributeValue(id, null);
+    var staticEntityRecord5 = menuItem.CreateRecord();
+    staticEntityRecord5.Identifier = "Catalog";
+    staticEntityRecord5.SetAttributeValue(id, null);
+    staticEntityRecord5.SetAttributeValue(order, "3");
+    staticEntityRecord5.SetAttributeValue(caption, "\"Catalog\"");
+    var staticEntityRecord6 = menuItem.CreateRecord();
+    staticEntityRecord6.Identifier = "Backoffice";
+    staticEntityRecord6.SetAttributeValue(order, "8");
+    staticEntityRecord6.SetAttributeValue(id, null);
+    staticEntityRecord6.SetAttributeValue(caption, "\"Backoffice\"");
+    var staticEntityRecord7 = menuItem.CreateRecord();
+    staticEntityRecord7.Identifier = "Orders";
+    staticEntityRecord7.SetAttributeValue(caption, "\"Orders\"");
+    staticEntityRecord7.SetAttributeValue(order, "2");
+    staticEntityRecord7.SetAttributeValue(id, null);
+    // IServerEntitySignature OrderManagement_CS/Model
+    var model = (OutSystems.Model.Data.IServerEntitySignature)eSpace.AddDependency(Services.ModelServices.ParseGlobalKey("h4hOdXSBM+8wZIwdkF8FYg*2p2JVO7sRkSzs0DUeHUQdg"));
+    // IServerEntitySignature OrderManagement_CS/Opportunity
+    var opportunity = (OutSystems.Model.Data.IServerEntitySignature)eSpace.AddDependency(Services.ModelServices.ParseGlobalKey("h4hOdXSBM+8wZIwdkF8FYg*FUkZ0+80_kacmkzSqaTAZA"));
+    // IStaticEntitySignature OrderManagement_CS/OpportunityStage
+    var opportunityStage = (OutSystems.Model.Data.IStaticEntitySignature)eSpace.AddDependency(Services.ModelServices.ParseGlobalKey("h4hOdXSBM+8wZIwdkF8FYg*I_WguRE6i0ONR19n2tJVeg"));
+    // IStaticEntitySignature OrderManagement_CS/OpportunityType
+    var opportunityType = (OutSystems.Model.Data.IStaticEntitySignature)eSpace.AddDependency(Services.ModelServices.ParseGlobalKey("h4hOdXSBM+8wZIwdkF8FYg*VdLkAMQtiUCazba77E8dNw"));
+    // IServerEntitySignature OrderManagement_CS/Order
+    var order2 = (OutSystems.Model.Data.IServerEntitySignature)eSpace.AddDependency(Services.ModelServices.ParseGlobalKey("h4hOdXSBM+8wZIwdkF8FYg*c+zC0pGN6EiamyLFCimg1w"));
+    // IServerEntitySignature OrderManagement_CS/OrderItem
+    var orderItem = (OutSystems.Model.Data.IServerEntitySignature)eSpace.AddDependency(Services.ModelServices.ParseGlobalKey("h4hOdXSBM+8wZIwdkF8FYg*l7vBCBEn1UyeEtF2qutk5g"));
+    // IStaticEntitySignature OrderManagement_CS/OrderStatus
+    var orderStatus = (OutSystems.Model.Data.IStaticEntitySignature)eSpace.AddDependency(Services.ModelServices.ParseGlobalKey("h4hOdXSBM+8wZIwdkF8FYg*qQ9mSIqB4EiilI0Ghf7zGA"));
+    // IStaticEntitySignature OutSystemsUI/Orientation
+    var orientation = (OutSystems.Model.Data.IStaticEntitySignature)eSpace.AddDependency(Services.ModelServices.ParseGlobalKey("Kn_hixxDWEm4lMd7mIpycQ*JPhxTWOlY0+MdmJuTgvd2w"));
+    // IStaticEntitySignature OutSystemsUI/Position
+    var position = (OutSystems.Model.Data.IStaticEntitySignature)eSpace.AddDependency(Services.ModelServices.ParseGlobalKey("Kn_hixxDWEm4lMd7mIpycQ*6HPAg8K6IkGXcqpuEipdNg"));
+    // IServerEntitySignature (System)/Process
+    var process = (OutSystems.Model.Data.IServerEntitySignature)eSpace.AddDependency(Services.ModelServices.ParseGlobalKey("uXCIR2Atc0+es3zYuZSnNw*rk1aJNDvckKT91HxgCaO6w"));
+    // IServerEntitySignature OrderManagement_CS/Product
+    var product = (OutSystems.Model.Data.IServerEntitySignature)eSpace.AddDependency(Services.ModelServices.ParseGlobalKey("h4hOdXSBM+8wZIwdkF8FYg*mSILkfqhmUqVLozHB9yeIg"));
+    // IServerEntitySignature OrderManagement_CS/ProductCategory
+    var productCategory = (OutSystems.Model.Data.IServerEntitySignature)eSpace.AddDependency(Services.ModelServices.ParseGlobalKey("h4hOdXSBM+8wZIwdkF8FYg*cx0jMNWFoEO1xZMMYXJlPQ"));
+    // IServerEntitySignature OrderManagement_CS/ProductFeature
+    var productFeature = (OutSystems.Model.Data.IServerEntitySignature)eSpace.AddDependency(Services.ModelServices.ParseGlobalKey("h4hOdXSBM+8wZIwdkF8FYg*F6YONiFoekyjw7vh1rdcpA"));
+    // IServerEntitySignature OrderManagement_CS/ProductPicture
+    var productPicture = (OutSystems.Model.Data.IServerEntitySignature)eSpace.AddDependency(Services.ModelServices.ParseGlobalKey("h4hOdXSBM+8wZIwdkF8FYg*KSEcsu76j0SdxnXiNeohEA"));
+    // IStaticEntitySignature OrderManagement_CS/ProductSort
+    var productSort = (OutSystems.Model.Data.IStaticEntitySignature)eSpace.AddDependency(Services.ModelServices.ParseGlobalKey("h4hOdXSBM+8wZIwdkF8FYg*A3AmKRRi_0yWS_n8eEJTxQ"));
+    // IServerEntitySignature (System)/Role
+    var role = (OutSystems.Model.Data.IServerEntitySignature)eSpace.AddDependency(Services.ModelServices.ParseGlobalKey("uXCIR2Atc0+es3zYuZSnNw*NuqV5Rtc2D6TqrunUsf4kg"));
+    // IStaticEntitySignature (System)/RuntimeKind
+    var runtimeKind = (OutSystems.Model.Data.IStaticEntitySignature)eSpace.AddDependency(Services.ModelServices.ParseGlobalKey("uXCIR2Atc0+es3zYuZSnNw*64ECB3l5wUuxUhWl1Ubk4A"));
+    // IServerEntitySignature (System)/Sent_Email
+    var sent_Email = (OutSystems.Model.Data.IServerEntitySignature)eSpace.AddDependency(Services.ModelServices.ParseGlobalKey("uXCIR2Atc0+es3zYuZSnNw*CWv+3dcKHk6ctXgJ81F2tg"));
+    // IStaticEntitySignature OutSystemsUI/Shape
+    var shape = (OutSystems.Model.Data.IStaticEntitySignature)eSpace.AddDependency(Services.ModelServices.ParseGlobalKey("Kn_hixxDWEm4lMd7mIpycQ*qWjhb23B20ybb6nmxreTJg"));
+    // IStaticEntitySignature OutSystemsUI/Size
+    var size = (OutSystems.Model.Data.IStaticEntitySignature)eSpace.AddDependency(Services.ModelServices.ParseGlobalKey("Kn_hixxDWEm4lMd7mIpycQ*tBDBGmSJC0emsoGuSmtb3g"));
+    // IStaticEntitySignature OutSystemsUI/Space
+    var space = (OutSystems.Model.Data.IStaticEntitySignature)eSpace.AddDependency(Services.ModelServices.ParseGlobalKey("Kn_hixxDWEm4lMd7mIpycQ*cdSzj6SCnEOcwQVV36kUUQ"));
+    // IStaticEntitySignature OutSystemsCharts/StackingType_v1
+    var stackingType_v1 = (OutSystems.Model.Data.IStaticEntitySignature)eSpace.AddDependency(Services.ModelServices.ParseGlobalKey("Iw63OPxQEEeAzzaCqdyZig*vvyqGqWZV0iD8uR1TmXtzw"));
+    // IStaticEntitySignature OutSystemsUI/Steps
+    var steps = (OutSystems.Model.Data.IStaticEntitySignature)eSpace.AddDependency(Services.ModelServices.ParseGlobalKey("Kn_hixxDWEm4lMd7mIpycQ*n47d5CCm9U22GZuKdxvlow"));
+    // IServerEntitySignature (System)/Tenant
+    var tenant = (OutSystems.Model.Data.IServerEntitySignature)eSpace.AddDependency(Services.ModelServices.ParseGlobalKey("uXCIR2Atc0+es3zYuZSnNw*WQMM07oXpk63b_WESl+a5Q"));
+    // IStaticEntitySignature OutSystemsUI/Trigger
+    var trigger = (OutSystems.Model.Data.IStaticEntitySignature)eSpace.AddDependency(Services.ModelServices.ParseGlobalKey("Kn_hixxDWEm4lMd7mIpycQ*uhIJjybGlUeQplMR4rlwyw"));
+    // IServerEntitySignature (System)/User
+    var user = (OutSystems.Model.Data.IServerEntitySignature)eSpace.AddDependency(Services.ModelServices.ParseGlobalKey("uXCIR2Atc0+es3zYuZSnNw*LYIWpF+Ey0aicHD144NUTA"));
+    // IStaticEntitySignature OutSystemsCharts/XAxisValuesType_v1
+    var xAxisValuesType_v1 = (OutSystems.Model.Data.IStaticEntitySignature)eSpace.AddDependency(Services.ModelServices.ParseGlobalKey("Iw63OPxQEEeAzzaCqdyZig*oP9L4vWC0kydQ5exQmSfdw"));
+}

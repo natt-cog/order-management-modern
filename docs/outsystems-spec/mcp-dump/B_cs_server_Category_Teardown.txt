@@ -1,0 +1,23 @@
+(OutSystems.Model.IESpace eSpace) => {
+    /*** creating IServerAction 'Category_Teardown' ***/
+    var category_Teardown = eSpace.CreateServerAction("Category_Teardown");
+    var bootstrap = eSpace.Folders.Named("Bootstrap");
+    category_Teardown.Folder = bootstrap;
+    var startNode = category_Teardown.CreateNode<OutSystems.Model.Logic.Nodes.IStartNode>();
+    var getProductCategories = category_Teardown.CreateNode<OutSystems.Model.Logic.Nodes.IAggregateNode>("GetProductCategories");
+    getProductCategories.SetMaxRecords("999999999");
+    var productCategory = eSpace.Entities.OfType<OutSystems.Model.Data.IServerEntity>().Named("ProductCategory");
+    var addSourceOperation = getProductCategories.AsDatabaseAggregate.CreateSource(productCategory);
+    startNode.Target = getProductCategories;
+    var forEachNode = category_Teardown.CreateNode<OutSystems.Model.Logic.Nodes.IForEachNode>().ConnectedBelow(getProductCategories, 1363);
+    forEachNode.SetRecordList("GetProductCategories.List");
+    var deleteProductCategory = category_Teardown.CreateNode<OutSystems.Model.Logic.Nodes.IExecuteServerActionNode>("DeleteProductCategory").ToTheRightOf(forEachNode, 1824);
+    deleteProductCategory.Action = productCategory.DeleteAction;
+    deleteProductCategory.Target = forEachNode;
+    var deleteProductCategory2 = productCategory.DeleteAction;
+    var id = deleteProductCategory2.InputParameters.Named("Id");
+    deleteProductCategory.SetArgumentValue(id, "GetProductCategories.List.Current.ProductCategory.Id");
+    forEachNode.CycleTarget = deleteProductCategory;
+    var endNode = category_Teardown.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>();
+    forEachNode.Target = endNode;
+}

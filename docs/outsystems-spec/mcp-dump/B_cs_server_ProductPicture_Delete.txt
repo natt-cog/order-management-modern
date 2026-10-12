@@ -1,0 +1,26 @@
+(OutSystems.Model.IESpace eSpace) => {
+    /*** creating IServerAction 'ProductPicture_Delete' ***/
+    var productPicture_Delete = eSpace.CreateServerAction("ProductPicture_Delete");
+    productPicture_Delete.Description = "Action that Deletes a ProductPicture record from the Database.";
+    var productPicture = eSpace.Folders.Named("ProductPicture");
+    productPicture_Delete.Folder = productPicture;
+    productPicture_Delete.Public = true;
+    productPicture_Delete.Shareable = true;
+    var productPictureId = productPicture_Delete.CreateInputParameter("ProductPictureId");
+    var productPicture2 = eSpace.Entities.OfType<OutSystems.Model.Data.IServerEntity>().Named("ProductPicture");
+    productPictureId.DataType = productPicture2.IdentifierType;
+    productPictureId.Description = "Id of the record to be deleted from the Database.";
+    var startNode = productPicture_Delete.CreateNode<OutSystems.Model.Logic.Nodes.IStartNode>();
+    var ifNode = productPicture_Delete.CreateNode<OutSystems.Model.Logic.Nodes.IIfNode>().ConnectedBelow(startNode, 1936);
+    ifNode.SetCondition("ProductPictureId <> NullIdentifier()");
+    ifNode.Label = "Valid ProductPictureId?";
+    var endNode = productPicture_Delete.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>().ToTheRightOf(ifNode, 1820);
+    ifNode.FalseTarget = endNode;
+    var deleteProductPicture = productPicture_Delete.CreateNode<OutSystems.Model.Logic.Nodes.IExecuteServerActionNode>("DeleteProductPicture").Below(ifNode, 1824);
+    deleteProductPicture.Action = productPicture2.DeleteAction;
+    var deleteProductPicture2 = productPicture2.DeleteAction;
+    var id = deleteProductPicture2.InputParameters.Named("Id");
+    deleteProductPicture.SetArgumentValue(id, "ProductPictureId");
+    ifNode.TrueTarget = deleteProductPicture;
+    var endNode2 = productPicture_Delete.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>().ConnectedBelow(deleteProductPicture, 1824);
+}

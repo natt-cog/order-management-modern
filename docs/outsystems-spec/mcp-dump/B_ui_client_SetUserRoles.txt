@@ -1,0 +1,15 @@
+(OutSystems.Model.IESpace eSpace) => {
+    /*** creating IClientAction 'SetUserRoles' ***/
+    var setUserRoles = eSpace.CreateClientAction("SetUserRoles");
+    var startNode = setUserRoles.CreateNode<OutSystems.Model.Logic.Nodes.IStartNode>();
+    var user_GetRoles = setUserRoles.CreateNode<OutSystems.Model.Logic.Nodes.IExecuteServerActionNode>("User_GetRoles");
+    var user_GetRoles2 = eSpace.ServerActions.Named("User_GetRoles");
+    user_GetRoles.Action = user_GetRoles2;
+    startNode.Target = user_GetRoles;
+    var assignNode = setUserRoles.CreateNode<OutSystems.Model.Logic.Nodes.IAssignNode>();
+    assignNode.Label = "Set Roles";
+    var assignment = assignNode.CreateAssignment("Client.IsOrderEntrySpecialist", "User_GetRoles.IsOrderEntrySpecialist");
+    var assignment2 = assignNode.CreateAssignment("Client.IsOrderManager", "User_GetRoles.IsOrderManager");
+    user_GetRoles.Target = assignNode;
+    var endNode = setUserRoles.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>().ConnectedBelow(assignNode, 1368);
+}

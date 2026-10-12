@@ -1,0 +1,26 @@
+(OutSystems.Model.IESpace eSpace) => {
+    /*** creating IServerAction 'Product_GetAmountAndStock' ***/
+    var product_GetAmountAndStock = eSpace.CreateServerAction("Product_GetAmountAndStock");
+    var order = eSpace.Folders.Named("Order");
+    product_GetAmountAndStock.Folder = order;
+    var productId = product_GetAmountAndStock.CreateInputParameter("ProductId");
+    var orderManagement_CS = eSpace.References.Named("OrderManagement_CS");
+    var product = orderManagement_CS.Entities.OfType<OutSystems.Model.Data.IServerEntitySignature>().Named("Product");
+    productId.DataType = product.IdentifierType;
+    var startNode = product_GetAmountAndStock.CreateNode<OutSystems.Model.Logic.Nodes.IStartNode>();
+    var getProductById = product_GetAmountAndStock.CreateNode<OutSystems.Model.Logic.Nodes.IAggregateNode>("GetProductById");
+    getProductById.SetMaxRecords("1");
+    var product2 = getProductById.AsDatabaseAggregate.CreateSource(product);
+    getProductById.AsDatabaseAggregate.CreateFilter("Product.Id = ProductId");
+    startNode.Target = getProductById;
+    var assignNode = product_GetAmountAndStock.CreateNode<OutSystems.Model.Logic.Nodes.IAssignNode>().ConnectedBelow(getProductById, 1372);
+    var assignment = assignNode.CreateAssignment("Stock", "GetProductById.List.Current.Product.Stock");
+    var assignNode2 = product_GetAmountAndStock.CreateNode<OutSystems.Model.Logic.Nodes.IAssignNode>().ConnectedBelow(assignNode, 1371);
+    assignNode2.Label = "Amount";
+    var assignment2 = assignNode2.CreateAssignment("Amount", "GetProductById.List.Current.Product.Price");
+    var endNode = product_GetAmountAndStock.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>().ConnectedBelow(assignNode2, 1600);
+    var stock = product_GetAmountAndStock.CreateOutputParameter("Stock");
+    stock.DataType = eSpace.IntegerType;
+    var amount = product_GetAmountAndStock.CreateOutputParameter("Amount");
+    amount.DataType = eSpace.CurrencyType;
+}

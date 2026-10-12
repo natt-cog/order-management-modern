@@ -1,0 +1,43 @@
+(OutSystems.Model.IESpace eSpace) => {
+    /*** creating IServerAction 'Country_Validate' ***/
+    var country_Validate = eSpace.CreateServerAction("Country_Validate");
+    country_Validate.Description = "Validates an country record";
+    var country = eSpace.Folders.Named("Country");
+    country_Validate.Folder = country;
+    var countryRecord = country_Validate.CreateInputParameter("CountryRecord");
+    var country2 = eSpace.Entities.OfType<OutSystems.Model.Data.IServerEntity>().Named("Country");
+    countryRecord.DataType = country2;
+    var startNode = country_Validate.CreateNode<OutSystems.Model.Logic.Nodes.IStartNode>();
+    var ifNode = country_Validate.CreateNode<OutSystems.Model.Logic.Nodes.IIfNode>();
+    ifNode.SetCondition("CountryRecord.Code = \"\"");
+    ifNode.Label = "Code is empty?";
+    startNode.Target = ifNode;
+    var getAccount_ByCode = country_Validate.CreateNode<OutSystems.Model.Logic.Nodes.IAggregateNode>("GetAccount_ByCode").Below(ifNode, 1368);
+    getAccount_ByCode.SetMaxRecords("1");
+    var country3 = getAccount_ByCode.AsDatabaseAggregate.CreateSource(country2);
+    getAccount_ByCode.AsDatabaseAggregate.CreateFilter("Country.Id <> CountryRecord.Id");
+    getAccount_ByCode.AsDatabaseAggregate.CreateFilter("Country.Code = CountryRecord.Code");
+    ifNode.FalseTarget = getAccount_ByCode;
+    var raiseExceptionNode = country_Validate.CreateNode<OutSystems.Model.Logic.Nodes.IRaiseExceptionNode>().ToTheRightOf(ifNode, 1596);
+    var invalidArgumentsException = eSpace.UserExceptions.Named("InvalidArgumentsException");
+    raiseExceptionNode.Exception = invalidArgumentsException;
+    raiseExceptionNode.SetExceptionMessage("\"Code is required\"");
+    ifNode.TrueTarget = raiseExceptionNode;
+    var ifNode2 = country_Validate.CreateNode<OutSystems.Model.Logic.Nodes.IIfNode>().ConnectedBelow(getAccount_ByCode, 1368);
+    ifNode2.SetCondition("GetAccount_ByCode.List.Empty = False ");
+    ifNode2.Label = "Has records?";
+    var ifNode3 = country_Validate.CreateNode<OutSystems.Model.Logic.Nodes.IIfNode>();
+    ifNode3.SetCondition("CountryRecord.Name = \"\"");
+    ifNode3.Label = "Name is empty?";
+    ifNode2.FalseTarget = ifNode3;
+    var raiseExceptionNode2 = country_Validate.CreateNode<OutSystems.Model.Logic.Nodes.IRaiseExceptionNode>();
+    raiseExceptionNode2.Exception = invalidArgumentsException;
+    raiseExceptionNode2.SetExceptionMessage("\"Code must be unique\"");
+    ifNode2.TrueTarget = raiseExceptionNode2;
+    var endNode = country_Validate.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>();
+    ifNode3.FalseTarget = endNode;
+    var raiseExceptionNode3 = country_Validate.CreateNode<OutSystems.Model.Logic.Nodes.IRaiseExceptionNode>().ToTheRightOf(ifNode3, 1600);
+    raiseExceptionNode3.Exception = invalidArgumentsException;
+    raiseExceptionNode3.SetExceptionMessage("\"Name is required\"");
+    ifNode3.TrueTarget = raiseExceptionNode3;
+}

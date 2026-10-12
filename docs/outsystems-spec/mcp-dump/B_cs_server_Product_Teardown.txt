@@ -1,0 +1,26 @@
+(OutSystems.Model.IESpace eSpace) => {
+    /*** creating IServerAction 'Product_Teardown' ***/
+    var product_Teardown = eSpace.CreateServerAction("Product_Teardown");
+    var bootstrap = eSpace.Folders.Named("Bootstrap");
+    product_Teardown.Folder = bootstrap;
+    var startNode = product_Teardown.CreateNode<OutSystems.Model.Logic.Nodes.IStartNode>();
+    var getProducts = product_Teardown.CreateNode<OutSystems.Model.Logic.Nodes.IAggregateNode>("GetProducts");
+    getProducts.SetMaxRecords("999999999");
+    var product = eSpace.Entities.OfType<OutSystems.Model.Data.IServerEntity>().Named("Product");
+    var addSourceOperation = getProducts.AsDatabaseAggregate.CreateSource(product);
+    startNode.Target = getProducts;
+    var forEachNode = product_Teardown.CreateNode<OutSystems.Model.Logic.Nodes.IForEachNode>().ConnectedBelow(getProducts, 1363);
+    forEachNode.SetRecordList("GetProducts.List");
+    var deleteProduct = product_Teardown.CreateNode<OutSystems.Model.Logic.Nodes.IExecuteServerActionNode>("DeleteProduct").ToTheRightOf(forEachNode, 1824);
+    deleteProduct.Action = product.DeleteAction;
+    deleteProduct.Target = forEachNode;
+    var deleteProduct2 = product.DeleteAction;
+    var id = deleteProduct2.InputParameters.Named("Id");
+    deleteProduct.SetArgumentValue(id, "GetProducts.List.Current.Product.Id");
+    forEachNode.CycleTarget = deleteProduct;
+    var endNode = product_Teardown.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>();
+    forEachNode.Target = endNode;
+    var commentNode = product_Teardown.CreateNode<OutSystems.Model.Logic.Nodes.ICommentNode>();
+    commentNode.Text = "ProductPicture will be deleted with OnCascade Delete";
+    commentNode.CreateConnector(deleteProduct);
+}

@@ -1,0 +1,39 @@
+(OutSystems.Model.IESpace eSpace) => {
+    /*** creating IClientAction 'PrettyFormatCurrency' ***/
+    var prettyFormatCurrency = eSpace.CreateClientAction("PrettyFormatCurrency");
+    prettyFormatCurrency.Function = true;
+    var number = prettyFormatCurrency.CreateInputParameter("Number");
+    number.DataType = eSpace.DecimalType;
+    var decimalDigits = prettyFormatCurrency.CreateInputParameter("DecimalDigits");
+    decimalDigits.DataType = eSpace.DecimalType;
+    var unit = prettyFormatCurrency.CreateInputParameter("Unit");
+    unit.DataType = eSpace.TextType;
+    unit.IsMandatory = false;
+    var groupSeparator = prettyFormatCurrency.CreateInputParameter("GroupSeparator");
+    groupSeparator.DataType = eSpace.TextType;
+    var decimalSeparator = prettyFormatCurrency.CreateInputParameter("DecimalSeparator");
+    decimalSeparator.DataType = eSpace.TextType;
+    var startNode = prettyFormatCurrency.CreateNode<OutSystems.Model.Logic.Nodes.IStartNode>();
+    var assignNode = prettyFormatCurrency.CreateNode<OutSystems.Model.Logic.Nodes.IAssignNode>();
+    var assignment = assignNode.CreateAssignment("Representation", "Unit");
+    startNode.Target = assignNode;
+    var ifNode = prettyFormatCurrency.CreateNode<OutSystems.Model.Logic.Nodes.IIfNode>().ConnectedBelow(assignNode, 1370);
+    ifNode.SetCondition("Number < 1000");
+    var ifNode2 = prettyFormatCurrency.CreateNode<OutSystems.Model.Logic.Nodes.IIfNode>().Below(ifNode, 1828);
+    ifNode2.SetCondition("Number < 1000000000");
+    ifNode.FalseTarget = ifNode2;
+    var assignNode2 = prettyFormatCurrency.CreateNode<OutSystems.Model.Logic.Nodes.IAssignNode>().ToTheRightOf(ifNode, 1600);
+    var assignment2 = assignNode2.CreateAssignment("Representation", "Representation + FormatDecimal(Number, decimal_digits: DecimalDigits, DecimalSeparator, GroupSeparator)");
+    ifNode.TrueTarget = assignNode2;
+    var assignNode3 = prettyFormatCurrency.CreateNode<OutSystems.Model.Logic.Nodes.IAssignNode>().Below(ifNode2, 1601);
+    var assignment3 = assignNode3.CreateAssignment("Representation", "Representation + FormatDecimal(Number/1000000, decimal_digits: DecimalDigits, DecimalSeparator, GroupSeparator) + \"M\"\n");
+    ifNode2.FalseTarget = assignNode3;
+    var assignNode4 = prettyFormatCurrency.CreateNode<OutSystems.Model.Logic.Nodes.IAssignNode>().ToTheRightOf(ifNode2, 1600);
+    var assignment4 = assignNode4.CreateAssignment("Representation", "Representation + FormatDecimal(Number/1000, DecimalDigits, DecimalSeparator, GroupSeparator) + \"k\"");
+    ifNode2.TrueTarget = assignNode4;
+    var endNode = prettyFormatCurrency.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>().ConnectedToTheRightOf(assignNode2, 1600);
+    var endNode2 = prettyFormatCurrency.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>().ConnectedBelow(assignNode3, 1372);
+    var endNode3 = prettyFormatCurrency.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>().ConnectedToTheRightOf(assignNode4, 1600);
+    var representation = prettyFormatCurrency.CreateOutputParameter("Representation");
+    representation.DataType = eSpace.TextType;
+}

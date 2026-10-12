@@ -1,0 +1,30 @@
+(OutSystems.Model.IESpace eSpace) => {
+    /*** creating IServerAction 'Order_Validate' ***/
+    var order_Validate = eSpace.CreateServerAction("Order_Validate");
+    order_Validate.Description = "Validates an order record";
+    var order = eSpace.Folders.Named("Order");
+    order_Validate.Folder = order;
+    var orderRecord = order_Validate.CreateInputParameter("OrderRecord");
+    var order2 = eSpace.Entities.OfType<OutSystems.Model.Data.IServerEntity>().Named("Order");
+    orderRecord.DataType = order2;
+    var startNode = order_Validate.CreateNode<OutSystems.Model.Logic.Nodes.IStartNode>();
+    var ifNode = order_Validate.CreateNode<OutSystems.Model.Logic.Nodes.IIfNode>();
+    ifNode.SetCondition("OrderRecord.TotalAmount < 0");
+    ifNode.Label = "TotalAmount < 0?";
+    startNode.Target = ifNode;
+    var ifNode2 = order_Validate.CreateNode<OutSystems.Model.Logic.Nodes.IIfNode>().Below(ifNode, 1372);
+    ifNode2.SetCondition("OrderRecord.OrderStatusId = NullIdentifier()");
+    ifNode2.Label = "OrderStatusId is null?";
+    ifNode.FalseTarget = ifNode2;
+    var raiseExceptionNode = order_Validate.CreateNode<OutSystems.Model.Logic.Nodes.IRaiseExceptionNode>().ToTheRightOf(ifNode, 1607);
+    var invalidArgumentsException = eSpace.UserExceptions.Named("InvalidArgumentsException");
+    raiseExceptionNode.Exception = invalidArgumentsException;
+    raiseExceptionNode.SetExceptionMessage("\"Total amount must be greater or equal to zero\"");
+    ifNode.TrueTarget = raiseExceptionNode;
+    var endNode = order_Validate.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>();
+    ifNode2.FalseTarget = endNode;
+    var raiseExceptionNode2 = order_Validate.CreateNode<OutSystems.Model.Logic.Nodes.IRaiseExceptionNode>().ToTheRightOf(ifNode2, 1607);
+    raiseExceptionNode2.Exception = invalidArgumentsException;
+    raiseExceptionNode2.SetExceptionMessage("\"Status is required\"");
+    ifNode2.TrueTarget = raiseExceptionNode2;
+}

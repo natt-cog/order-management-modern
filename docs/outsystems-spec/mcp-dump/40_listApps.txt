@@ -1,0 +1,1 @@
+{"apps":[{"key":"2be963fd-7244-4ead-aad0-b7ca29a008f9","name":"OrderManagement_CS","kind":"eSpace","version":"0","isOpen":true,"isReference":false,"moduleType":"Reactive"},{"key":"7157cde8-6180-4a0d-869e-316a0f6cc850","name":"OrderManagement","kind":"eSpace","version":"0","isOpen":true,"isReference":false,"moduleType":"Reactive"}]}
