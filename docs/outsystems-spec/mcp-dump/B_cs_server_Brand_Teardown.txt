@@ -1,0 +1,23 @@
+(OutSystems.Model.IESpace eSpace) => {
+    /*** creating IServerAction 'Brand_Teardown' ***/
+    var brand_Teardown = eSpace.CreateServerAction("Brand_Teardown");
+    var bootstrap = eSpace.Folders.Named("Bootstrap");
+    brand_Teardown.Folder = bootstrap;
+    var startNode = brand_Teardown.CreateNode<OutSystems.Model.Logic.Nodes.IStartNode>();
+    var getBrands = brand_Teardown.CreateNode<OutSystems.Model.Logic.Nodes.IAggregateNode>("GetBrands");
+    var brand2 = eSpace.Entities.OfType<OutSystems.Model.Data.IServerEntity>().Named("Brand");
+    var brand = getBrands.AsDatabaseAggregate.CreateSource(brand2);
+    getBrands.AsDatabaseAggregate.CreateSort().SetAttribute("Brand.Name");
+    startNode.Target = getBrands;
+    var forEachNode = brand_Teardown.CreateNode<OutSystems.Model.Logic.Nodes.IForEachNode>().ConnectedBelow(getBrands, 1824);
+    forEachNode.SetRecordList("GetBrands.List");
+    var deleteBrand = brand_Teardown.CreateNode<OutSystems.Model.Logic.Nodes.IExecuteServerActionNode>("DeleteBrand");
+    deleteBrand.Action = brand2.DeleteAction;
+    deleteBrand.Target = forEachNode;
+    var deleteBrand2 = brand2.DeleteAction;
+    var id = deleteBrand2.InputParameters.Named("Id");
+    deleteBrand.SetArgumentValue(id, "GetBrands.List.Current.Brand.Id");
+    forEachNode.CycleTarget = deleteBrand;
+    var endNode = brand_Teardown.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>();
+    forEachNode.Target = endNode;
+}

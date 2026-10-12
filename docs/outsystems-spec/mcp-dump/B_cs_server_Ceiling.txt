@@ -1,0 +1,20 @@
+(OutSystems.Model.IESpace eSpace) => {
+    /*** creating IServerAction 'Ceiling' ***/
+    var ceiling = eSpace.CreateServerAction("Ceiling");
+    ceiling.Description = "Ceiling Function: the least integer that is greater than or equal to x.";
+    var utils = eSpace.Folders.Named("Utils");
+    ceiling.Folder = utils;
+    ceiling.Function = true;
+    ceiling.Public = true;
+    ceiling.Shareable = true;
+    var in = ceiling.CreateInputParameter("In");
+    in.DataType = eSpace.IntegerType;
+    var startNode = ceiling.CreateNode<OutSystems.Model.Logic.Nodes.IStartNode>();
+    var assignNode = ceiling.CreateNode<OutSystems.Model.Logic.Nodes.IAssignNode>().ConnectedBelow(startNode, 2171);
+    assignNode.Label = "Round Following";
+    var assignment = assignNode.CreateAssignment("Out", "In/100");
+    var assignment2 = assignNode.CreateAssignment("Out", "(Out*100)+100");
+    var endNode = ceiling.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>().ConnectedBelow(assignNode, 2149);
+    var out = ceiling.CreateOutputParameter("Out");
+    out.DataType = eSpace.IntegerType;
+}

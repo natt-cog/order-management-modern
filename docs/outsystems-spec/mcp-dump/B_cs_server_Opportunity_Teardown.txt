@@ -1,0 +1,23 @@
+(OutSystems.Model.IESpace eSpace) => {
+    /*** creating IServerAction 'Opportunity_Teardown' ***/
+    var opportunity_Teardown = eSpace.CreateServerAction("Opportunity_Teardown");
+    var bootstrap = eSpace.Folders.Named("Bootstrap");
+    opportunity_Teardown.Folder = bootstrap;
+    var startNode = opportunity_Teardown.CreateNode<OutSystems.Model.Logic.Nodes.IStartNode>();
+    var getOpportunities = opportunity_Teardown.CreateNode<OutSystems.Model.Logic.Nodes.IAggregateNode>("GetOpportunities");
+    getOpportunities.SetMaxRecords("999999999");
+    var opportunity = eSpace.Entities.OfType<OutSystems.Model.Data.IServerEntity>().Named("Opportunity");
+    var addSourceOperation = getOpportunities.AsDatabaseAggregate.CreateSource(opportunity);
+    startNode.Target = getOpportunities;
+    var forEachNode = opportunity_Teardown.CreateNode<OutSystems.Model.Logic.Nodes.IForEachNode>().ConnectedBelow(getOpportunities, 1363);
+    forEachNode.SetRecordList("GetOpportunities.List");
+    var deleteOpportunity = opportunity_Teardown.CreateNode<OutSystems.Model.Logic.Nodes.IExecuteServerActionNode>("DeleteOpportunity").ToTheRightOf(forEachNode, 1824);
+    deleteOpportunity.Action = opportunity.DeleteAction;
+    deleteOpportunity.Target = forEachNode;
+    var deleteOpportunity2 = opportunity.DeleteAction;
+    var id = deleteOpportunity2.InputParameters.Named("Id");
+    deleteOpportunity.SetArgumentValue(id, "GetOpportunities.List.Current.Opportunity.Id");
+    forEachNode.CycleTarget = deleteOpportunity;
+    var endNode = opportunity_Teardown.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>();
+    forEachNode.Target = endNode;
+}

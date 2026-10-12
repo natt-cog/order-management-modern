@@ -1,0 +1,23 @@
+(OutSystems.Model.IESpace eSpace) => {
+    /*** creating IClientAction 'UpdateProductStock' ***/
+    var updateProductStock = eSpace.CreateClientAction("UpdateProductStock");
+    var products = eSpace.Folders.Named("Products");
+    updateProductStock.Folder = products;
+    var productId = updateProductStock.CreateInputParameter("ProductId");
+    var orderManagement_CS = eSpace.References.Named("OrderManagement_CS");
+    var product = orderManagement_CS.Entities.OfType<OutSystems.Model.Data.IServerEntitySignature>().Named("Product");
+    productId.DataType = product.IdentifierType;
+    var quantity = updateProductStock.CreateInputParameter("Quantity");
+    quantity.DataType = eSpace.IntegerType;
+    var startNode = updateProductStock.CreateNode<OutSystems.Model.Logic.Nodes.IStartNode>();
+    var updateProductStock2 = updateProductStock.CreateNode<OutSystems.Model.Logic.Nodes.IExecuteServerActionNode>("UpdateProductStock");
+    var updateProductStock3 = eSpace.ServerActions.Named("UpdateProductStock");
+    updateProductStock2.Action = updateProductStock3;
+    var productId2 = updateProductStock3.InputParameters.Named("ProductId");
+    updateProductStock2.SetArgumentValue(productId2, "ProductId");
+    var quantity2 = updateProductStock3.InputParameters.Named("Quantity");
+    updateProductStock2.SetArgumentValue(quantity2, "Quantity");
+    startNode.Target = updateProductStock2;
+    var endNode = updateProductStock.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>();
+    updateProductStock2.Target = endNode;
+}

@@ -1,0 +1,22 @@
+(OutSystems.Model.IESpace eSpace) => {
+    /*** creating IServerAction 'Decimal_FormatPretty' ***/
+    var decimal_FormatPretty = eSpace.CreateServerAction("Decimal_FormatPretty");
+    var utils = eSpace.Folders.Named("Utils");
+    decimal_FormatPretty.Folder = utils;
+    decimal_FormatPretty.Function = true;
+    decimal_FormatPretty.Public = true;
+    decimal_FormatPretty.Shareable = true;
+    var number = decimal_FormatPretty.CreateInputParameter("Number");
+    number.DataType = eSpace.IntegerType;
+    var decimalDigits = decimal_FormatPretty.CreateInputParameter("DecimalDigits");
+    decimalDigits.DataType = eSpace.DecimalType;
+    var unit = decimal_FormatPretty.CreateInputParameter("Unit");
+    unit.DataType = eSpace.TextType;
+    unit.IsMandatory = false;
+    var startNode = decimal_FormatPretty.CreateNode<OutSystems.Model.Logic.Nodes.IStartNode>();
+    var assignNode = decimal_FormatPretty.CreateNode<OutSystems.Model.Logic.Nodes.IAssignNode>().ConnectedBelow(startNode, 2157);
+    var assignment = assignNode.CreateAssignment("Representation", "Unit + \nIf(Number/1000000 > 1, FormatDecimal(Number/1000000, decimal_digits: DecimalDigits, Site.DecimalSeparator, Site.GroupSeparator) + \"M\",\nIf(Number/1000 > 1, FormatDecimal(Number/1000, decimal_digits: DecimalDigits, Site.DecimalSeparator, Site.GroupSeparator) + \"K\",\nFormatDecimal(Number, decimal_digits: DecimalDigits, Site.DecimalSeparator, Site.GroupSeparator)))");
+    var endNode = decimal_FormatPretty.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>().ConnectedBelow(assignNode, 2163);
+    var representation = decimal_FormatPretty.CreateOutputParameter("Representation");
+    representation.DataType = eSpace.TextType;
+}

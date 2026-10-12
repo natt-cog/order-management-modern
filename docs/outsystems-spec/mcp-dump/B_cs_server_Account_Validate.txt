@@ -1,0 +1,43 @@
+(OutSystems.Model.IESpace eSpace) => {
+    /*** creating IServerAction 'Account_Validate' ***/
+    var account_Validate = eSpace.CreateServerAction("Account_Validate");
+    account_Validate.Description = "Validates an account record";
+    var account = eSpace.Folders.Named("Account");
+    account_Validate.Folder = account;
+    var accountRecord = account_Validate.CreateInputParameter("AccountRecord");
+    var account2 = eSpace.Entities.OfType<OutSystems.Model.Data.IServerEntity>().Named("Account");
+    accountRecord.DataType = account2;
+    var startNode = account_Validate.CreateNode<OutSystems.Model.Logic.Nodes.IStartNode>();
+    var ifNode = account_Validate.CreateNode<OutSystems.Model.Logic.Nodes.IIfNode>();
+    ifNode.SetCondition("AccountRecord.Company = \"\"");
+    ifNode.Label = "Company is empty?";
+    startNode.Target = ifNode;
+    var getAccount_ByCompany = account_Validate.CreateNode<OutSystems.Model.Logic.Nodes.IAggregateNode>("GetAccount_ByCompany").Below(ifNode, 1600);
+    getAccount_ByCompany.SetMaxRecords("1");
+    var account3 = getAccount_ByCompany.AsDatabaseAggregate.CreateSource(account2);
+    getAccount_ByCompany.AsDatabaseAggregate.CreateFilter("Account.Id <> AccountRecord.Id");
+    getAccount_ByCompany.AsDatabaseAggregate.CreateFilter("Account.Code = AccountRecord.Code");
+    ifNode.FalseTarget = getAccount_ByCompany;
+    var raiseExceptionNode = account_Validate.CreateNode<OutSystems.Model.Logic.Nodes.IRaiseExceptionNode>().ToTheRightOf(ifNode, 1600);
+    var invalidArgumentsException = eSpace.UserExceptions.Named("InvalidArgumentsException");
+    raiseExceptionNode.Exception = invalidArgumentsException;
+    raiseExceptionNode.SetExceptionMessage("\"Company name is required\"");
+    ifNode.TrueTarget = raiseExceptionNode;
+    var ifNode2 = account_Validate.CreateNode<OutSystems.Model.Logic.Nodes.IIfNode>().ConnectedBelow(getAccount_ByCompany, 1372);
+    ifNode2.SetCondition("GetAccount_ByCompany.List.Empty = False ");
+    ifNode2.Label = "Has records?";
+    var ifNode3 = account_Validate.CreateNode<OutSystems.Model.Logic.Nodes.IIfNode>().Below(ifNode2, 1371);
+    ifNode3.SetCondition("AccountRecord.Contact = \"\"");
+    ifNode3.Label = "Contact is empty?";
+    ifNode2.FalseTarget = ifNode3;
+    var raiseExceptionNode2 = account_Validate.CreateNode<OutSystems.Model.Logic.Nodes.IRaiseExceptionNode>().ToTheRightOf(ifNode2, 1600);
+    raiseExceptionNode2.Exception = invalidArgumentsException;
+    raiseExceptionNode2.SetExceptionMessage("\"Company name must be unique\"");
+    ifNode2.TrueTarget = raiseExceptionNode2;
+    var endNode = account_Validate.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>().Below(ifNode3, 1600);
+    ifNode3.FalseTarget = endNode;
+    var raiseExceptionNode3 = account_Validate.CreateNode<OutSystems.Model.Logic.Nodes.IRaiseExceptionNode>().ToTheRightOf(ifNode3, 1600);
+    raiseExceptionNode3.Exception = invalidArgumentsException;
+    raiseExceptionNode3.SetExceptionMessage("\"Code is required\"");
+    ifNode3.TrueTarget = raiseExceptionNode3;
+}

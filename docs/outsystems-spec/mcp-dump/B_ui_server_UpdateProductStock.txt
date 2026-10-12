@@ -1,0 +1,29 @@
+(OutSystems.Model.IESpace eSpace) => {
+    /*** creating IServerAction 'UpdateProductStock' ***/
+    var updateProductStock = eSpace.CreateServerAction("UpdateProductStock");
+    var productId = updateProductStock.CreateInputParameter("ProductId");
+    var orderManagement_CS = eSpace.References.Named("OrderManagement_CS");
+    var product = orderManagement_CS.Entities.OfType<OutSystems.Model.Data.IServerEntitySignature>().Named("Product");
+    productId.DataType = product.IdentifierType;
+    var quantity = updateProductStock.CreateInputParameter("Quantity");
+    quantity.DataType = eSpace.IntegerType;
+    var startNode = updateProductStock.CreateNode<OutSystems.Model.Logic.Nodes.IStartNode>();
+    var getProductById = updateProductStock.CreateNode<OutSystems.Model.Logic.Nodes.IAggregateNode>("GetProductById");
+    getProductById.SetMaxRecords("1");
+    var product2 = getProductById.AsDatabaseAggregate.CreateSource(product);
+    getProductById.AsDatabaseAggregate.CreateFilter("Product.IsActive = True");
+    getProductById.AsDatabaseAggregate.CreateFilter("Product.Id = ProductId");
+    startNode.Target = getProductById;
+    var assignNode = updateProductStock.CreateNode<OutSystems.Model.Logic.Nodes.IAssignNode>();
+    assignNode.Label = "Set new stock";
+    var assignment = assignNode.CreateAssignment("GetProductById.List.Current.Product.Stock", "GetProductById.List.Current.Product.Stock + Quantity");
+    getProductById.Target = assignNode;
+    var product_Save = updateProductStock.CreateNode<OutSystems.Model.Logic.Nodes.IExecuteServerActionNode>("Product_Save").ConnectedBelow(assignNode, 1600);
+    var product_Save2 = orderManagement_CS.ServerActions.Named("Product_Save");
+    product_Save.Action = product_Save2;
+    var productRecord = product_Save2.InputParameters.Named("ProductRecord");
+    product_Save.SetArgumentValue(productRecord, "GetProductById.List.Current.Product");
+    var invoker = product_Save2.InputParameters.Named("Invoker");
+    product_Save.SetArgumentValue(invoker, "GetUserId()");
+    var endNode = updateProductStock.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>().ConnectedBelow(product_Save, 1600);
+}

@@ -1,0 +1,25 @@
+(OutSystems.Model.UI.Mobile.IMobileFlow common) => {
+    /*** creating IMobileBlock 'LayoutBlank' ***/
+    var layoutBlank = common.CreateBlock("LayoutBlank");
+    var onReady = layoutBlank.CreateScreenAction("OnReady");
+    var startNode = onReady.CreateNode<OutSystems.Model.Logic.Nodes.IStartNode>();
+    layoutBlank.OnReady.Destination = onReady;
+    var layoutReady = onReady.CreateNode<OutSystems.Model.Logic.Nodes.IExecuteClientActionNode>("LayoutReady");
+    var eSpace = common.GetESpace();
+    var outSystemsUI = eSpace.References.Named("OutSystemsUI");
+    var layoutReady2 = outSystemsUI.ClientActions.Named("LayoutReady");
+    layoutReady.Action = layoutReady2;
+    startNode.Target = layoutReady;
+    var endNode = onReady.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>();
+    layoutReady.Target = endNode;
+    var container = layoutBlank.CreateWidget<ServiceStudio.Plugin.NRWidgets.IContainer>();
+    container.Gap = null;
+    container.SetStyle("\"layout blank\"");
+    var container2 = container.CreateWidget<ServiceStudio.Plugin.NRWidgets.IContainer>();
+    container2.Gap = null;
+    container2.SetStyle("\"content\"");
+    var content = container2.CreateWidget<OutSystems.Model.UI.Mobile.Widgets.IPlaceholderWidget>("Content");
+    content.Description = "Drag widgets or aggregates here";
+    content.Gap = null;
+    content.SetStyleClasses("\"main-content\"");
+}

@@ -1,0 +1,29 @@
+(OutSystems.Model.IESpace eSpace) => {
+    /*** creating IServerAction 'Model_Validate' ***/
+    var model_Validate = eSpace.CreateServerAction("Model_Validate");
+    var model = eSpace.Folders.Named("Model");
+    model_Validate.Folder = model;
+    var modelRecord = model_Validate.CreateInputParameter("ModelRecord");
+    var model2 = eSpace.Entities.OfType<OutSystems.Model.Data.IServerEntity>().Named("Model");
+    modelRecord.DataType = model2;
+    var startNode = model_Validate.CreateNode<OutSystems.Model.Logic.Nodes.IStartNode>();
+    var ifNode = model_Validate.CreateNode<OutSystems.Model.Logic.Nodes.IIfNode>();
+    ifNode.SetCondition("ModelRecord.Name = NullTextIdentifier()");
+    ifNode.Label = "Name is empty?";
+    startNode.Target = ifNode;
+    var ifNode2 = model_Validate.CreateNode<OutSystems.Model.Logic.Nodes.IIfNode>().Below(ifNode, 1371);
+    ifNode2.SetCondition("ModelRecord.BrandId = NullIdentifier()");
+    ifNode2.Label = "Brand Id null?";
+    ifNode.FalseTarget = ifNode2;
+    var raiseExceptionNode = model_Validate.CreateNode<OutSystems.Model.Logic.Nodes.IRaiseExceptionNode>().ToTheRightOf(ifNode, 1600);
+    var invalidArgumentsException = eSpace.UserExceptions.Named("InvalidArgumentsException");
+    raiseExceptionNode.Exception = invalidArgumentsException;
+    raiseExceptionNode.SetExceptionMessage("\"Name is required\"");
+    ifNode.TrueTarget = raiseExceptionNode;
+    var endNode = model_Validate.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>().Below(ifNode2, 1600);
+    ifNode2.FalseTarget = endNode;
+    var raiseExceptionNode2 = model_Validate.CreateNode<OutSystems.Model.Logic.Nodes.IRaiseExceptionNode>().ToTheRightOf(ifNode2, 1600);
+    raiseExceptionNode2.Exception = invalidArgumentsException;
+    raiseExceptionNode2.SetExceptionMessage("\"Brand identifier is required\"");
+    ifNode2.TrueTarget = raiseExceptionNode2;
+}

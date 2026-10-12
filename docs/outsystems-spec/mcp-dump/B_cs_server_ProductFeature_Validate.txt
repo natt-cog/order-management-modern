@@ -1,0 +1,24 @@
+(OutSystems.Model.IESpace eSpace) => {
+    /*** creating IServerAction 'ProductFeature_Validate' ***/
+    var productFeature_Validate = eSpace.CreateServerAction("ProductFeature_Validate");
+    productFeature_Validate.Description = "Action that Creates or Updates a ProductFeature record in the Database.";
+    var productFeature = eSpace.Folders.Named("ProductFeature");
+    productFeature_Validate.Folder = productFeature;
+    productFeature_Validate.Public = true;
+    productFeature_Validate.Shareable = true;
+    var productFeature2 = productFeature_Validate.CreateInputParameter("ProductFeature");
+    var productFeature3 = eSpace.Entities.OfType<OutSystems.Model.Data.IServerEntity>().Named("ProductFeature");
+    productFeature2.DataType = productFeature3;
+    productFeature2.Description = "Source record used for Creating or Updating the record in the Database.";
+    var startNode = productFeature_Validate.CreateNode<OutSystems.Model.Logic.Nodes.IStartNode>();
+    var ifNode = productFeature_Validate.CreateNode<OutSystems.Model.Logic.Nodes.IIfNode>().ConnectedBelow(startNode, 1372);
+    ifNode.SetCondition("ProductFeature.ProductId <> NullIdentifier() and\nTrim(ProductFeature.Description) <> NullTextIdentifier() and \nLength(Trim(ProductFeature.Description)) <= 100");
+    ifNode.Label = "Required fields?";
+    var raiseExceptionNode = productFeature_Validate.CreateNode<OutSystems.Model.Logic.Nodes.IRaiseExceptionNode>().ToTheRightOf(ifNode, 1829);
+    var invalidArgumentsException = eSpace.UserExceptions.Named("InvalidArgumentsException");
+    raiseExceptionNode.Exception = invalidArgumentsException;
+    raiseExceptionNode.SetExceptionMessage("\"ProductId and Description (Max Length is 100) are mandatory fields.\"");
+    ifNode.FalseTarget = raiseExceptionNode;
+    var endNode = productFeature_Validate.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>();
+    ifNode.TrueTarget = endNode;
+}

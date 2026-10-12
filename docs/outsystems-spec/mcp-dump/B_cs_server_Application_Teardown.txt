@@ -1,0 +1,34 @@
+(OutSystems.Model.IESpace eSpace) => {
+    /*** creating IServerAction 'Application_Teardown' ***/
+    var application_Teardown = eSpace.CreateServerAction("Application_Teardown");
+    var bootstrap = eSpace.Folders.Named("Bootstrap");
+    application_Teardown.Folder = bootstrap;
+    var startNode = application_Teardown.CreateNode<OutSystems.Model.Logic.Nodes.IStartNode>();
+    var order_Teardown = application_Teardown.CreateNode<OutSystems.Model.Logic.Nodes.IExecuteServerActionNode>("Order_Teardown");
+    var order_Teardown2 = eSpace.ServerActions.Named("Order_Teardown");
+    order_Teardown.Action = order_Teardown2;
+    startNode.Target = order_Teardown;
+    var opportunity_Teardown = application_Teardown.CreateNode<OutSystems.Model.Logic.Nodes.IExecuteServerActionNode>("Opportunity_Teardown").ConnectedBelow(order_Teardown, 1600);
+    var opportunity_Teardown2 = eSpace.ServerActions.Named("Opportunity_Teardown");
+    opportunity_Teardown.Action = opportunity_Teardown2;
+    var account_Teardown = application_Teardown.CreateNode<OutSystems.Model.Logic.Nodes.IExecuteServerActionNode>("Account_Teardown").ConnectedBelow(opportunity_Teardown, 1600);
+    var account_Teardown2 = eSpace.ServerActions.Named("Account_Teardown");
+    account_Teardown.Action = account_Teardown2;
+    var product_Teardown = application_Teardown.CreateNode<OutSystems.Model.Logic.Nodes.IExecuteServerActionNode>("Product_Teardown").ConnectedBelow(account_Teardown, 1372);
+    var product_Teardown2 = eSpace.ServerActions.Named("Product_Teardown");
+    product_Teardown.Action = product_Teardown2;
+    var model_Teardown = application_Teardown.CreateNode<OutSystems.Model.Logic.Nodes.IExecuteServerActionNode>("Model_Teardown").ConnectedBelow(product_Teardown, 1579);
+    var model_Teardown2 = eSpace.ServerActions.Named("Model_Teardown");
+    model_Teardown.Action = model_Teardown2;
+    var brand_Teardown = application_Teardown.CreateNode<OutSystems.Model.Logic.Nodes.IExecuteServerActionNode>("Brand_Teardown").ConnectedBelow(model_Teardown, 1596);
+    var brand_Teardown2 = eSpace.ServerActions.Named("Brand_Teardown");
+    brand_Teardown.Action = brand_Teardown2;
+    var category_Teardown = application_Teardown.CreateNode<OutSystems.Model.Logic.Nodes.IExecuteServerActionNode>("Category_Teardown").ConnectedBelow(brand_Teardown, 1596);
+    var category_Teardown2 = eSpace.ServerActions.Named("Category_Teardown");
+    category_Teardown.Action = category_Teardown2;
+    var country_Teardown = application_Teardown.CreateNode<OutSystems.Model.Logic.Nodes.IExecuteServerActionNode>("Country_Teardown").ConnectedBelow(category_Teardown, 1596);
+    var country_Teardown2 = eSpace.ServerActions.Named("Country_Teardown");
+    country_Teardown.Action = country_Teardown2;
+    var endNode = application_Teardown.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>();
+    country_Teardown.Target = endNode;
+}

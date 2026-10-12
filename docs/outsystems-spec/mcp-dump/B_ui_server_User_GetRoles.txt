@@ -1,0 +1,27 @@
+(OutSystems.Model.IESpace eSpace) => {
+    /*** creating IServerAction 'User_GetRoles' ***/
+    var user_GetRoles = eSpace.CreateServerAction("User_GetRoles");
+    var startNode = user_GetRoles.CreateNode<OutSystems.Model.Logic.Nodes.IStartNode>();
+    var checkOrderRepresentativeRole = user_GetRoles.CreateNode<OutSystems.Model.Logic.Nodes.IExecuteServerActionNode>("CheckOrderRepresentativeRole");
+    var orderManagement_CS = eSpace.References.Named("OrderManagement_CS");
+    var orderRepresentative = orderManagement_CS.Roles.Named("OrderRepresentative");
+    var checkOrderRepresentativeRole2 = orderRepresentative.RoleActions.Named("CheckOrderRepresentativeRole");
+    checkOrderRepresentativeRole.Action = checkOrderRepresentativeRole2;
+    var userId = checkOrderRepresentativeRole2.InputParameters.Named("UserId");
+    startNode.Target = checkOrderRepresentativeRole;
+    var checkOrderManagerRole = user_GetRoles.CreateNode<OutSystems.Model.Logic.Nodes.IExecuteServerActionNode>("CheckOrderManagerRole").ConnectedBelow(checkOrderRepresentativeRole, 1368);
+    var orderManager = orderManagement_CS.Roles.Named("OrderManager");
+    var checkOrderManagerRole2 = orderManager.RoleActions.Named("CheckOrderManagerRole");
+    checkOrderManagerRole.Action = checkOrderManagerRole2;
+    var userId2 = checkOrderManagerRole2.InputParameters.Named("UserId");
+    var assignNode = user_GetRoles.CreateNode<OutSystems.Model.Logic.Nodes.IAssignNode>().ConnectedBelow(checkOrderManagerRole, 1368);
+    assignNode.Label = "Output";
+    var assignment = assignNode.CreateAssignment("IsOrderEntrySpecialist", "CheckOrderRepresentativeRole.HasRole");
+    var assignment2 = assignNode.CreateAssignment("IsOrderManager", "CheckOrderManagerRole.HasRole");
+    var endNode = user_GetRoles.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>();
+    assignNode.Target = endNode;
+    var isOrderEntrySpecialist = user_GetRoles.CreateOutputParameter("IsOrderEntrySpecialist");
+    isOrderEntrySpecialist.DataType = eSpace.BooleanType;
+    var isOrderManager = user_GetRoles.CreateOutputParameter("IsOrderManager");
+    isOrderManager.DataType = eSpace.BooleanType;
+}

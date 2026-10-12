@@ -1,0 +1,33 @@
+(OutSystems.Model.IESpace eSpace) => {
+    /*** creating IServerAction 'GetCeilingandFloor' ***/
+    var getCeilingandFloor = eSpace.CreateServerAction("GetCeilingandFloor");
+    var order = eSpace.Folders.Named("Order");
+    getCeilingandFloor.Folder = order;
+    var totalAmountCacheMin = getCeilingandFloor.CreateInputParameter("TotalAmountCacheMin");
+    totalAmountCacheMin.DataType = eSpace.IntegerType;
+    var totalAmountCacheMax = getCeilingandFloor.CreateInputParameter("TotalAmountCacheMax");
+    totalAmountCacheMax.DataType = eSpace.IntegerType;
+    var startNode = getCeilingandFloor.CreateNode<OutSystems.Model.Logic.Nodes.IStartNode>();
+    var floor = getCeilingandFloor.CreateNode<OutSystems.Model.Logic.Nodes.IExecuteServerActionNode>("Floor");
+    var orderManagement_CS = eSpace.References.Named("OrderManagement_CS");
+    var floor2 = orderManagement_CS.ServerActions.Named("Floor");
+    floor.Action = floor2;
+    var in = floor2.InputParameters.Named("In");
+    floor.SetArgumentValue(in, "TotalAmountCacheMin");
+    startNode.Target = floor;
+    var ceiling = getCeilingandFloor.CreateNode<OutSystems.Model.Logic.Nodes.IExecuteServerActionNode>("Ceiling").ConnectedBelow(floor, 1378);
+    var ceiling2 = orderManagement_CS.ServerActions.Named("Ceiling");
+    ceiling.Action = ceiling2;
+    var in2 = ceiling2.InputParameters.Named("In");
+    ceiling.SetArgumentValue(in2, "TotalAmountCacheMax");
+    var assignNode = getCeilingandFloor.CreateNode<OutSystems.Model.Logic.Nodes.IAssignNode>().ConnectedBelow(ceiling, 1373);
+    assignNode.Label = "Output";
+    var assignment = assignNode.CreateAssignment("Min", "Floor.Out");
+    var assignment2 = assignNode.CreateAssignment("Max", "Ceiling.Out");
+    var endNode = getCeilingandFloor.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>();
+    assignNode.Target = endNode;
+    var min = getCeilingandFloor.CreateOutputParameter("Min");
+    min.DataType = eSpace.IntegerType;
+    var max = getCeilingandFloor.CreateOutputParameter("Max");
+    max.DataType = eSpace.IntegerType;
+}

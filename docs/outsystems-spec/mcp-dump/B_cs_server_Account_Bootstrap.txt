@@ -1,0 +1,34 @@
+(OutSystems.Model.IESpace eSpace) => {
+    /*** creating IServerAction 'Account_Bootstrap' ***/
+    var account_Bootstrap = eSpace.CreateServerAction("Account_Bootstrap");
+    var bootstrap = eSpace.Folders.Named("Bootstrap");
+    account_Bootstrap.Folder = bootstrap;
+    var adminUserId = account_Bootstrap.CreateInputParameter("AdminUserId");
+    var _System_ = eSpace.References.Named("(System)");
+    var user = _System_.Entities.OfType<OutSystems.Model.Data.IServerEntitySignature>().Named("User");
+    adminUserId.DataType = user.IdentifierType;
+    var startNode = account_Bootstrap.CreateNode<OutSystems.Model.Logic.Nodes.IStartNode>();
+    var excelToRecordList = account_Bootstrap.CreateNode<OutSystems.Model.Logic.Nodes.IExcelToRecordListNode>("ExcelToRecordList");
+    var accountExcel = eSpace.Structures.Named("AccountExcel");
+    excelToRecordList.DataType = eSpace.GetOrCreateListType(eSpace.GetOrCreateAnonymousStructure(Tuple.Create<string, ITypeSignature>("AccountExcel", accountExcel)));
+    excelToRecordList.SetFileContent("Resources.Accounts_xlsx.Content");
+    startNode.Target = excelToRecordList;
+    var forEachNode = account_Bootstrap.CreateNode<OutSystems.Model.Logic.Nodes.IForEachNode>().ConnectedBelow(excelToRecordList, 1368);
+    forEachNode.SetRecordList("ExcelToRecordList");
+    var getCountry = account_Bootstrap.CreateNode<OutSystems.Model.Logic.Nodes.IAggregateNode>("GetCountry");
+    getCountry.SetMaxRecords("1");
+    var country2 = eSpace.Entities.OfType<OutSystems.Model.Data.IServerEntity>().Named("Country");
+    var country = getCountry.AsDatabaseAggregate.CreateSource(country2);
+    getCountry.AsDatabaseAggregate.CreateFilter("ToLower(Country.Code) = ToLower(Trim(ExcelToRecordList.Current.AccountExcel.Country))");
+    forEachNode.CycleTarget = getCountry;
+    var endNode = account_Bootstrap.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>();
+    forEachNode.Target = endNode;
+    var account_Save = account_Bootstrap.CreateNode<OutSystems.Model.Logic.Nodes.IExecuteServerActionNode>("Account_Save").ConnectedBelow(getCountry, 1371);
+    var account_Save2 = eSpace.ServerActions.Named("Account_Save");
+    account_Save.Action = account_Save2;
+    account_Save.Target = forEachNode;
+    var invoker = account_Save2.InputParameters.Named("Invoker");
+    account_Save.SetArgumentValue(invoker, "AdminUserId");
+    var accountRecord = account_Save2.InputParameters.Named("AccountRecord");
+    account_Save.SetArgumentValue(accountRecord, "{ Id: NullIdentifier(), Code: \"\", Company: ExcelToRecordList.Current.AccountExcel.Company, Contact: ExcelToRecordList.Current.AccountExcel.Contact, CountryId: GetCountry.List.Current.Country.Id, Address: ExcelToRecordList.Current.AccountExcel.Address, City: ExcelToRecordList.Current.AccountExcel.City, PostalCode: ExcelToRecordList.Current.AccountExcel.PostalCode, Phone: ExcelToRecordList.Current.AccountExcel.Phone, Email: ExcelToRecordList.Current.AccountExcel.Email, CreatedBy: AdminUserId, CreatedOn: CurrDateTime(), UpdatedBy: AdminUserId, UpdatedOn: CurrDateTime(), IsActive: True }");
+}

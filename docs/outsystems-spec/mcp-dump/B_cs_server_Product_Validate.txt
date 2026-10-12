@@ -1,0 +1,46 @@
+(OutSystems.Model.IESpace eSpace) => {
+    /*** creating IServerAction 'Product_Validate' ***/
+    var product_Validate = eSpace.CreateServerAction("Product_Validate");
+    product_Validate.Description = "Validates an product record";
+    var product = eSpace.Folders.Named("Product");
+    product_Validate.Folder = product;
+    var productRecord = product_Validate.CreateInputParameter("ProductRecord");
+    var product2 = eSpace.Entities.OfType<OutSystems.Model.Data.IServerEntity>().Named("Product");
+    productRecord.DataType = product2;
+    var startNode = product_Validate.CreateNode<OutSystems.Model.Logic.Nodes.IStartNode>();
+    var ifNode = product_Validate.CreateNode<OutSystems.Model.Logic.Nodes.IIfNode>();
+    ifNode.SetCondition("ProductRecord.Name = \"\"");
+    ifNode.Label = "Name is empty?";
+    startNode.Target = ifNode;
+    var ifNode2 = product_Validate.CreateNode<OutSystems.Model.Logic.Nodes.IIfNode>().Below(ifNode, 1600);
+    ifNode2.SetCondition("ProductRecord.CategoryId = NullIdentifier()");
+    ifNode2.Label = "Category is null?";
+    ifNode.FalseTarget = ifNode2;
+    var raiseExceptionNode = product_Validate.CreateNode<OutSystems.Model.Logic.Nodes.IRaiseExceptionNode>().ToTheRightOf(ifNode, 1600);
+    var invalidArgumentsException = eSpace.UserExceptions.Named("InvalidArgumentsException");
+    raiseExceptionNode.Exception = invalidArgumentsException;
+    raiseExceptionNode.SetExceptionMessage("\"Name is required\"");
+    ifNode.TrueTarget = raiseExceptionNode;
+    var ifNode3 = product_Validate.CreateNode<OutSystems.Model.Logic.Nodes.IIfNode>().Below(ifNode2, 1372);
+    ifNode3.SetCondition("ProductRecord.Price < 0");
+    ifNode3.Label = "Price < 0?";
+    ifNode2.FalseTarget = ifNode3;
+    var raiseExceptionNode2 = product_Validate.CreateNode<OutSystems.Model.Logic.Nodes.IRaiseExceptionNode>().ToTheRightOf(ifNode2, 1600);
+    raiseExceptionNode2.Exception = invalidArgumentsException;
+    raiseExceptionNode2.SetExceptionMessage("\"Category is required\"");
+    ifNode2.TrueTarget = raiseExceptionNode2;
+    var ifNode4 = product_Validate.CreateNode<OutSystems.Model.Logic.Nodes.IIfNode>();
+    ifNode4.SetCondition("ProductRecord.Stock < 0");
+    ifNode4.Label = "Stock < 0";
+    ifNode3.FalseTarget = ifNode4;
+    var raiseExceptionNode3 = product_Validate.CreateNode<OutSystems.Model.Logic.Nodes.IRaiseExceptionNode>().ToTheRightOf(ifNode3, 1600);
+    raiseExceptionNode3.Exception = invalidArgumentsException;
+    raiseExceptionNode3.SetExceptionMessage("\"Price must be greater or equal to zero\"");
+    ifNode3.TrueTarget = raiseExceptionNode3;
+    var endNode = product_Validate.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>();
+    ifNode4.FalseTarget = endNode;
+    var raiseExceptionNode4 = product_Validate.CreateNode<OutSystems.Model.Logic.Nodes.IRaiseExceptionNode>();
+    raiseExceptionNode4.Exception = invalidArgumentsException;
+    raiseExceptionNode4.SetExceptionMessage("\"Stock must be greater or equal to zero\"");
+    ifNode4.TrueTarget = raiseExceptionNode4;
+}

@@ -1,0 +1,19 @@
+(OutSystems.Model.IESpace eSpace) => {
+    /*** creating IClientAction 'UpdateStockOnOrderDelete' ***/
+    var updateStockOnOrderDelete = eSpace.CreateClientAction("UpdateStockOnOrderDelete");
+    var orders = eSpace.Folders.Named("Orders");
+    updateStockOnOrderDelete.Folder = orders;
+    var orderId = updateStockOnOrderDelete.CreateInputParameter("OrderId");
+    var orderManagement_CS = eSpace.References.Named("OrderManagement_CS");
+    var order = orderManagement_CS.Entities.OfType<OutSystems.Model.Data.IServerEntitySignature>().Named("Order");
+    orderId.DataType = order.IdentifierType;
+    var startNode = updateStockOnOrderDelete.CreateNode<OutSystems.Model.Logic.Nodes.IStartNode>();
+    var updateStockOnOrderDelete2 = updateStockOnOrderDelete.CreateNode<OutSystems.Model.Logic.Nodes.IExecuteServerActionNode>("UpdateStockOnOrderDelete");
+    var updateStockOnOrderDelete3 = eSpace.ServerActions.Named("UpdateStockOnOrderDelete");
+    updateStockOnOrderDelete2.Action = updateStockOnOrderDelete3;
+    var orderId2 = updateStockOnOrderDelete3.InputParameters.Named("OrderId");
+    updateStockOnOrderDelete2.SetArgumentValue(orderId2, "OrderId");
+    startNode.Target = updateStockOnOrderDelete2;
+    var endNode = updateStockOnOrderDelete.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>();
+    updateStockOnOrderDelete2.Target = endNode;
+}

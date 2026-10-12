@@ -1,0 +1,30 @@
+(OutSystems.Model.UI.Mobile.IMobileFlow common) => {
+    /*** creating IMobileBlock 'ApplicationTitle' ***/
+    var applicationTitle = common.CreateBlock("ApplicationTitle");
+    applicationTitle.Public = true;
+    applicationTitle.Shareable = true;
+    var onClick = applicationTitle.CreateScreenAction("OnClick");
+    var startNode = onClick.CreateNode<OutSystems.Model.Logic.Nodes.IStartNode>();
+    var destinationNode = onClick.CreateNode<OutSystems.Model.Logic.Nodes.IDestinationNode>();
+    var redirectToURL = common.Nodes.OfType<OutSystems.Model.UI.Mobile.IExternalSite>().Named("RedirectToURL");
+    destinationNode.Destination = redirectToURL;
+    var uRL = redirectToURL.InputParameters.Named("URL");
+    destinationNode.SetArgumentValue(uRL, "GetOwnerURLPath()");
+    startNode.Target = destinationNode;
+    var applicationTitleWrapper = applicationTitle.CreateWidget<ServiceStudio.Plugin.NRWidgets.IContainer>("ApplicationTitleWrapper");
+    applicationTitleWrapper.Gap = null;
+    applicationTitleWrapper.SetStyle("\"application-name display-flex align-items-center full-height\"");
+    var appLogo = applicationTitleWrapper.CreateWidget<ServiceStudio.Plugin.NRWidgets.IImage>("AppLogo");
+    appLogo.CustomStyle = "height: 30px;";
+    var eSpace = common.GetESpace();
+    var oM_Logo = eSpace.Images.Named("OM_Logo");
+    appLogo.Image = oM_Logo;
+    appLogo.SetStyle("\"app-logo\"");
+    var expression = applicationTitleWrapper.CreateWidget<ServiceStudio.Plugin.NRWidgets.IExpression>();
+    expression.Example = "ACME";
+    expression.SetStyle("\"heading3 text-primary font-bold\"");
+    expression.SetValue("\"ACME\"");
+    var event2 = applicationTitleWrapper.CreateEvent();
+    event2.Event = "onclick";
+    event2.Handler = onClick;
+}

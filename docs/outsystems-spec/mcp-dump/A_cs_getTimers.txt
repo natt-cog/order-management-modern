@@ -1,0 +1,9 @@
+(OutSystems.Model.IESpace eSpace) => {
+    /*** creating ITimer 'Application_Bootstrap' ***/
+    var application_Bootstrap = eSpace.CreateTimer("Application_Bootstrap");
+    var application_Bootstrap2 = eSpace.ServerActions.Named("Application_Bootstrap");
+    application_Bootstrap.Action = application_Bootstrap2;
+    application_Bootstrap.CronSchedule = "WhenPublished";
+    application_Bootstrap.Description = "Bootstraps all aplication data";
+    application_Bootstrap.Schedule = "WhenPublished";
+}

@@ -1,0 +1,36 @@
+(OutSystems.Model.IESpace eSpace) => {
+    /*** creating IServerAction 'Model_Bootstrap' ***/
+    var model_Bootstrap = eSpace.CreateServerAction("Model_Bootstrap");
+    var bootstrap = eSpace.Folders.Named("Bootstrap");
+    model_Bootstrap.Folder = bootstrap;
+    var adminUserId = model_Bootstrap.CreateInputParameter("AdminUserId");
+    var _System_ = eSpace.References.Named("(System)");
+    var user = _System_.Entities.OfType<OutSystems.Model.Data.IServerEntitySignature>().Named("User");
+    adminUserId.DataType = user.IdentifierType;
+    var startNode = model_Bootstrap.CreateNode<OutSystems.Model.Logic.Nodes.IStartNode>();
+    var excelToRecordList = model_Bootstrap.CreateNode<OutSystems.Model.Logic.Nodes.IExcelToRecordListNode>("ExcelToRecordList");
+    var modelExcel = eSpace.Structures.Named("ModelExcel");
+    excelToRecordList.DataType = eSpace.GetOrCreateListType(eSpace.GetOrCreateAnonymousStructure(Tuple.Create<string, ITypeSignature>("ModelExcel", modelExcel)));
+    excelToRecordList.SetFileContent("Resources.Products_xlsx.Content");
+    excelToRecordList.SetSheetName("\"ProductModel\"");
+    startNode.Target = excelToRecordList;
+    var forEachNode = model_Bootstrap.CreateNode<OutSystems.Model.Logic.Nodes.IForEachNode>().ConnectedBelow(excelToRecordList, 1824);
+    forEachNode.SetRecordList("ExcelToRecordList");
+    var getBrands = model_Bootstrap.CreateNode<OutSystems.Model.Logic.Nodes.IAggregateNode>("GetBrands").ToTheRightOf(forEachNode, 1596);
+    getBrands.SetMaxRecords("1");
+    var brand2 = eSpace.Entities.OfType<OutSystems.Model.Data.IServerEntity>().Named("Brand");
+    var brand = getBrands.AsDatabaseAggregate.CreateSource(brand2);
+    getBrands.AsDatabaseAggregate.CreateFilter("ToLower(Brand.Name) = ToLower(Trim(ExcelToRecordList.Current.ModelExcel.BrandName))");
+    getBrands.AsDatabaseAggregate.CreateSort().SetAttribute("Brand.Name");
+    forEachNode.CycleTarget = getBrands;
+    var endNode = model_Bootstrap.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>();
+    forEachNode.Target = endNode;
+    var model_Save = model_Bootstrap.CreateNode<OutSystems.Model.Logic.Nodes.IExecuteServerActionNode>("Model_Save").ConnectedBelow(getBrands, 1368);
+    var model_Save2 = eSpace.ServerActions.Named("Model_Save");
+    model_Save.Action = model_Save2;
+    model_Save.Target = forEachNode;
+    var modelRecord = model_Save2.InputParameters.Named("ModelRecord");
+    model_Save.SetArgumentValue(modelRecord, "{ Id: NullIdentifier(), Name: ExcelToRecordList.Current.ModelExcel.Name, BrandId: GetBrands.List.Current.Brand.Id, IsActive: True, CreatedBy: AdminUserId, CreatedOn: CurrDateTime(), UpdatedBy: AdminUserId, UpdatedOn: CurrDateTime() }");
+    var invoker = model_Save2.InputParameters.Named("Invoker");
+    model_Save.SetArgumentValue(invoker, "AdminUserId");
+}

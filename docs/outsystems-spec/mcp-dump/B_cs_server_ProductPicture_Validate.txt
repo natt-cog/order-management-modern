@@ -1,0 +1,30 @@
+(OutSystems.Model.IESpace eSpace) => {
+    /*** creating IServerAction 'ProductPicture_Validate' ***/
+    var productPicture_Validate = eSpace.CreateServerAction("ProductPicture_Validate");
+    productPicture_Validate.Description = "Validates an product picture record";
+    var productPicture = eSpace.Folders.Named("ProductPicture");
+    productPicture_Validate.Folder = productPicture;
+    var productPictureRecord = productPicture_Validate.CreateInputParameter("ProductPictureRecord");
+    var productPicture2 = eSpace.Entities.OfType<OutSystems.Model.Data.IServerEntity>().Named("ProductPicture");
+    productPictureRecord.DataType = productPicture2;
+    var startNode = productPicture_Validate.CreateNode<OutSystems.Model.Logic.Nodes.IStartNode>();
+    var ifNode = productPicture_Validate.CreateNode<OutSystems.Model.Logic.Nodes.IIfNode>();
+    ifNode.SetCondition("ProductPictureRecord.Filename = \"\"");
+    ifNode.Label = "Name is empty?";
+    startNode.Target = ifNode;
+    var ifNode2 = productPicture_Validate.CreateNode<OutSystems.Model.Logic.Nodes.IIfNode>();
+    ifNode2.SetCondition("ProductPictureRecord.File = NullBinary()");
+    ifNode2.Label = "Picture is null?";
+    ifNode.FalseTarget = ifNode2;
+    var raiseExceptionNode = productPicture_Validate.CreateNode<OutSystems.Model.Logic.Nodes.IRaiseExceptionNode>();
+    var invalidArgumentsException = eSpace.UserExceptions.Named("InvalidArgumentsException");
+    raiseExceptionNode.Exception = invalidArgumentsException;
+    raiseExceptionNode.SetExceptionMessage("\"Name is required\"");
+    ifNode.TrueTarget = raiseExceptionNode;
+    var endNode = productPicture_Validate.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>();
+    ifNode2.FalseTarget = endNode;
+    var raiseExceptionNode2 = productPicture_Validate.CreateNode<OutSystems.Model.Logic.Nodes.IRaiseExceptionNode>().ToTheRightOf(ifNode2, 1600);
+    raiseExceptionNode2.Exception = invalidArgumentsException;
+    raiseExceptionNode2.SetExceptionMessage("\"Content is required\"");
+    ifNode2.TrueTarget = raiseExceptionNode2;
+}

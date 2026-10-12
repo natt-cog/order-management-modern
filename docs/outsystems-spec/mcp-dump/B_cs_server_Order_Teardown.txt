@@ -1,0 +1,38 @@
+(OutSystems.Model.IESpace eSpace) => {
+    /*** creating IServerAction 'Order_Teardown' ***/
+    var order_Teardown = eSpace.CreateServerAction("Order_Teardown");
+    var bootstrap = eSpace.Folders.Named("Bootstrap");
+    order_Teardown.Folder = bootstrap;
+    var startNode = order_Teardown.CreateNode<OutSystems.Model.Logic.Nodes.IStartNode>();
+    var getOrderItems = order_Teardown.CreateNode<OutSystems.Model.Logic.Nodes.IAggregateNode>("GetOrderItems");
+    getOrderItems.SetMaxRecords("999999999");
+    var orderItem2 = eSpace.Entities.OfType<OutSystems.Model.Data.IServerEntity>().Named("OrderItem");
+    var orderItem = getOrderItems.AsDatabaseAggregate.CreateSource(orderItem2);
+    getOrderItems.AsDatabaseAggregate.CreateSort().SetAttribute("OrderItem.CreatedOn");
+    startNode.Target = getOrderItems;
+    var forEachNode = order_Teardown.CreateNode<OutSystems.Model.Logic.Nodes.IForEachNode>().ConnectedBelow(getOrderItems, 1371);
+    forEachNode.SetRecordList("GetOrderItems.List");
+    var deleteOrderItem = order_Teardown.CreateNode<OutSystems.Model.Logic.Nodes.IExecuteServerActionNode>("DeleteOrderItem").ToTheRightOf(forEachNode, 1829);
+    deleteOrderItem.Action = orderItem2.DeleteAction;
+    deleteOrderItem.Target = forEachNode;
+    var deleteOrderItem2 = orderItem2.DeleteAction;
+    var id = deleteOrderItem2.InputParameters.Named("Id");
+    deleteOrderItem.SetArgumentValue(id, "GetOrderItems.List.Current.OrderItem.Id");
+    forEachNode.CycleTarget = deleteOrderItem;
+    var getOrders = order_Teardown.CreateNode<OutSystems.Model.Logic.Nodes.IAggregateNode>("GetOrders");
+    getOrders.SetMaxRecords("999999999");
+    var order = eSpace.Entities.OfType<OutSystems.Model.Data.IServerEntity>().Named("Order");
+    var addSourceOperation = getOrders.AsDatabaseAggregate.CreateSource(order);
+    forEachNode.Target = getOrders;
+    var forEachNode2 = order_Teardown.CreateNode<OutSystems.Model.Logic.Nodes.IForEachNode>().ConnectedBelow(getOrders, 1371);
+    forEachNode2.SetRecordList("GetOrders.List");
+    var deleteOrder = order_Teardown.CreateNode<OutSystems.Model.Logic.Nodes.IExecuteServerActionNode>("DeleteOrder").ToTheRightOf(forEachNode2, 1824);
+    deleteOrder.Action = order.DeleteAction;
+    deleteOrder.Target = forEachNode2;
+    var deleteOrder2 = order.DeleteAction;
+    var id2 = deleteOrder2.InputParameters.Named("Id");
+    deleteOrder.SetArgumentValue(id2, "GetOrders.List.Current.Order.Id");
+    forEachNode2.CycleTarget = deleteOrder;
+    var endNode = order_Teardown.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>();
+    forEachNode2.Target = endNode;
+}

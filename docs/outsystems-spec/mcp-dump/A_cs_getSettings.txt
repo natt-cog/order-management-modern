@@ -1,0 +1,31 @@
+(OutSystems.Model.IESpace eSpace) => {
+    /*** creating ISiteProperty 'Currency' ***/
+    var currency = eSpace.CreateSiteProperty(false, "Currency");
+    currency.DataType = eSpace.TextType;
+    currency.SetDefaultValue("\"€\"");
+    currency.Description = "Currency symbol for number formatting";
+    /*** creating ISiteProperty 'Dashboard_PersonalGoal' ***/
+    var dashboard_PersonalGoal = eSpace.CreateSiteProperty(false, "Dashboard_PersonalGoal");
+    dashboard_PersonalGoal.DataType = eSpace.CurrencyType;
+    dashboard_PersonalGoal.SetDefaultValue("50000");
+    /*** creating ISiteProperty 'Dashboard_TargetValue' ***/
+    var dashboard_TargetValue = eSpace.CreateSiteProperty(false, "Dashboard_TargetValue");
+    dashboard_TargetValue.DataType = eSpace.CurrencyType;
+    dashboard_TargetValue.SetDefaultValue("10000");
+    dashboard_TargetValue.Description = "Target value to be shown on dashboard";
+    /*** creating ISiteProperty 'Dashboard_TeamGoalPercent' ***/
+    var dashboard_TeamGoalPercent = eSpace.CreateSiteProperty(false, "Dashboard_TeamGoalPercent");
+    dashboard_TeamGoalPercent.DataType = eSpace.IntegerType;
+    dashboard_TeamGoalPercent.SetDefaultValue("54");
+    dashboard_TeamGoalPercent.Description = "Percent of company goal for team goal";
+    /*** creating ISiteProperty 'DecimalSeparator' ***/
+    var decimalSeparator = eSpace.CreateSiteProperty(false, "DecimalSeparator");
+    decimalSeparator.DataType = eSpace.TextType;
+    decimalSeparator.SetDefaultValue("\".\"");
+    decimalSeparator.Description = "Decimal separator for number formatting";
+    /*** creating ISiteProperty 'GroupSeparator' ***/
+    var groupSeparator = eSpace.CreateSiteProperty(false, "GroupSeparator");
+    groupSeparator.DataType = eSpace.TextType;
+    groupSeparator.SetDefaultValue("\",\"");
+    groupSeparator.Description = "Group separator for number formatting";
+}

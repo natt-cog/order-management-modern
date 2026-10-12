@@ -1,0 +1,48 @@
+(OutSystems.Model.IESpace eSpace) => {
+    /*** creating IServerAction 'SaveOrderItemandUpdateStock' ***/
+    var saveOrderItemandUpdateStock = eSpace.CreateServerAction("SaveOrderItemandUpdateStock");
+    var order = eSpace.Folders.Named("Order");
+    saveOrderItemandUpdateStock.Folder = order;
+    var productId = saveOrderItemandUpdateStock.CreateInputParameter("ProductId");
+    var orderManagement_CS = eSpace.References.Named("OrderManagement_CS");
+    var product = orderManagement_CS.Entities.OfType<OutSystems.Model.Data.IServerEntitySignature>().Named("Product");
+    productId.DataType = product.IdentifierType;
+    var quantity = saveOrderItemandUpdateStock.CreateInputParameter("Quantity");
+    quantity.DataType = eSpace.IntegerType;
+    var orderItemRecord = saveOrderItemandUpdateStock.CreateInputParameter("OrderItemRecord");
+    var orderItem = orderManagement_CS.Entities.OfType<OutSystems.Model.Data.IServerEntitySignature>().Named("OrderItem");
+    orderItemRecord.DataType = orderItem;
+    var newQuantity = saveOrderItemandUpdateStock.CreateLocalVariable("NewQuantity");
+    newQuantity.DataType = eSpace.IntegerType;
+    var startNode = saveOrderItemandUpdateStock.CreateNode<OutSystems.Model.Logic.Nodes.IStartNode>();
+    var getOrderItemById = saveOrderItemandUpdateStock.CreateNode<OutSystems.Model.Logic.Nodes.IAggregateNode>("GetOrderItemById");
+    var orderItem2 = getOrderItemById.AsDatabaseAggregate.CreateSource(orderItem);
+    var product2 = getOrderItemById.AsDatabaseAggregate.CreateSource(product);
+    var join = getOrderItemById.AsDatabaseAggregate.CreateJoin();
+    join.LeftSource = orderItem2;
+    join.RightSource = product2;
+    join.JoinType = OutSystems.Model.Enumerations.JoinType.Inner;
+    join.SetCondition("OrderItem.ProductId = Product.Id");
+    getOrderItemById.AsDatabaseAggregate.CreateFilter("OrderItem.IsActive = True");
+    getOrderItemById.AsDatabaseAggregate.CreateFilter("OrderItem.Id = OrderItemRecord.Id");
+    startNode.Target = getOrderItemById;
+    var assignNode = saveOrderItemandUpdateStock.CreateNode<OutSystems.Model.Logic.Nodes.IAssignNode>();
+    var assignment = assignNode.CreateAssignment("NewQuantity", "GetOrderItemById.List.Current.OrderItem.Quantity - Quantity");
+    getOrderItemById.Target = assignNode;
+    var orderItem_Save = saveOrderItemandUpdateStock.CreateNode<OutSystems.Model.Logic.Nodes.IExecuteServerActionNode>("OrderItem_Save");
+    var orderItem_Save2 = orderManagement_CS.ServerActions.Named("OrderItem_Save");
+    orderItem_Save.Action = orderItem_Save2;
+    var invoker = orderItem_Save2.InputParameters.Named("Invoker");
+    orderItem_Save.SetArgumentValue(invoker, "GetUserId()");
+    var orderItemRecord2 = orderItem_Save2.InputParameters.Named("OrderItemRecord");
+    orderItem_Save.SetArgumentValue(orderItemRecord2, "OrderItemRecord");
+    assignNode.Target = orderItem_Save;
+    var updateProductStock = saveOrderItemandUpdateStock.CreateNode<OutSystems.Model.Logic.Nodes.IExecuteServerActionNode>("UpdateProductStock").ConnectedBelow(orderItem_Save, 1600);
+    var updateProductStock2 = eSpace.ServerActions.Named("UpdateProductStock");
+    updateProductStock.Action = updateProductStock2;
+    var quantity2 = updateProductStock2.InputParameters.Named("Quantity");
+    updateProductStock.SetArgumentValue(quantity2, "NewQuantity");
+    var productId2 = updateProductStock2.InputParameters.Named("ProductId");
+    updateProductStock.SetArgumentValue(productId2, "ProductId");
+    var endNode = saveOrderItemandUpdateStock.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>().ConnectedBelow(updateProductStock, 1829);
+}

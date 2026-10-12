@@ -1,0 +1,38 @@
+(OutSystems.Model.IReference outSystemsChartsWeb) => {
+    // IStructureSignature OutSystemsChartsWeb/DataPoint2
+    var eSpace = outSystemsChartsWeb.GetESpace();
+    var dataPoint2 = (OutSystems.Model.Data.IStructureSignature)eSpace.AddDependency(Services.ModelServices.ParseGlobalKey("uQHsYT2wwkKZ1wrN3PIifQ*eciR7vtTQ0WfwfO2TBVEcQ"));
+    /*** creating IStructure 'Decimal Structure' ***/
+    var decimal = eSpace.CreateStructure("Decimal");
+    var decimal2 = decimal.CreateAttribute("Decimal");
+    decimal2.DataType = eSpace.DecimalType;
+    decimal2.Decimals = 8;
+    decimal2.Label = "Decimal";
+    decimal2.Length = 37;
+    // IStructureSignature OutSystemsUI/DropdownItem
+    var dropdownItem = (OutSystems.Model.Data.IStructureSignature)eSpace.AddDependency(Services.ModelServices.ParseGlobalKey("Kn_hixxDWEm4lMd7mIpycQ*GsxolpT5U0Gckg0MkAMyPQ"));
+    // IStructureSignature OutSystemsUI/DropdownOption
+    var dropdownOption = (OutSystems.Model.Data.IStructureSignature)eSpace.AddDependency(Services.ModelServices.ParseGlobalKey("Kn_hixxDWEm4lMd7mIpycQ*S7xoxEqbCUG_BCxpreTOYw"));
+    // IStructureSignature OutSystemsUI/DropdownOptionalConfigs
+    var dropdownOptionalConfigs = (OutSystems.Model.Data.IStructureSignature)eSpace.AddDependency(Services.ModelServices.ParseGlobalKey("Kn_hixxDWEm4lMd7mIpycQ*X1pGkDp6nkSgQbNaytI6Pg"));
+    // IStructureSignature OutSystemsUI/ErrorMessage
+    var errorMessage = (OutSystems.Model.Data.IStructureSignature)eSpace.AddDependency(Services.ModelServices.ParseGlobalKey("Kn_hixxDWEm4lMd7mIpycQ*5nlHOt6drUmqeh9sD2bQBA"));
+    // IStructureSignature OutSystemsCharts/Legacy_AdvancedDataPointFormat
+    var legacy_AdvancedDataPointFormat = (OutSystems.Model.Data.IStructureSignature)eSpace.AddDependency(Services.ModelServices.ParseGlobalKey("Iw63OPxQEEeAzzaCqdyZig*SCJfWWB5zUqbJpuM5I3qiQ"));
+    // IStructureSignature OutSystemsCharts/Legacy_AdvancedDataSeriesFormat
+    var legacy_AdvancedDataSeriesFormat = (OutSystems.Model.Data.IStructureSignature)eSpace.AddDependency(Services.ModelServices.ParseGlobalKey("Iw63OPxQEEeAzzaCqdyZig*cfmM0fZZBkGxlWsiiBQCHw"));
+    // IStructureSignature OutSystemsCharts/Legacy_AdvancedFormat
+    var legacy_AdvancedFormat = (OutSystems.Model.Data.IStructureSignature)eSpace.AddDependency(Services.ModelServices.ParseGlobalKey("Iw63OPxQEEeAzzaCqdyZig*GUFSt7GGukOQp+Wr75rDZg"));
+    // IStructureSignature OutSystemsCharts/Legacy_ChartFormat
+    var legacy_ChartFormat = (OutSystems.Model.Data.IStructureSignature)eSpace.AddDependency(Services.ModelServices.ParseGlobalKey("Iw63OPxQEEeAzzaCqdyZig*M5MK6X4I_Uy38Ds49yAieg"));
+    // IStructureSignature OutSystemsCharts/Legacy_DataPoint
+    var legacy_DataPoint = (OutSystems.Model.Data.IStructureSignature)eSpace.AddDependency(Services.ModelServices.ParseGlobalKey("Iw63OPxQEEeAzzaCqdyZig*91mTJGucs0+JKuxypYuElQ"));
+    // IStructureSignature OutSystemsCharts/Legacy_XAxisFormat
+    var legacy_XAxisFormat = (OutSystems.Model.Data.IStructureSignature)eSpace.AddDependency(Services.ModelServices.ParseGlobalKey("Iw63OPxQEEeAzzaCqdyZig*e3V4rnihnE6wys2zVEtuxg"));
+    // IStructureSignature OutSystemsCharts/Legacy_YAxisFormat
+    var legacy_YAxisFormat = (OutSystems.Model.Data.IStructureSignature)eSpace.AddDependency(Services.ModelServices.ParseGlobalKey("Iw63OPxQEEeAzzaCqdyZig*juVt1PWeg0qMafuUfTAIcg"));
+    // IStructureSignature OutSystemsUI/ProgressBarOptionalConfigs
+    var progressBarOptionalConfigs = (OutSystems.Model.Data.IStructureSignature)eSpace.AddDependency(Services.ModelServices.ParseGlobalKey("Kn_hixxDWEm4lMd7mIpycQ*yr_QLdz3gUSapQFUagrtsQ"));
+    // IStructureSignature OutSystemsUI/RangeSliderOptionalConfigs
+    var rangeSliderOptionalConfigs = (OutSystems.Model.Data.IStructureSignature)eSpace.AddDependency(Services.ModelServices.ParseGlobalKey("Kn_hixxDWEm4lMd7mIpycQ*YH6NTPqYJkq2DoxNHSzraQ"));
+}

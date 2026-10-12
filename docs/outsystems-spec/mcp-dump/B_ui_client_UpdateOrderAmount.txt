@@ -1,0 +1,19 @@
+(OutSystems.Model.IESpace eSpace) => {
+    /*** creating IClientAction 'UpdateOrderAmount' ***/
+    var updateOrderAmount = eSpace.CreateClientAction("UpdateOrderAmount");
+    var orders = eSpace.Folders.Named("Orders");
+    updateOrderAmount.Folder = orders;
+    var orderId = updateOrderAmount.CreateInputParameter("OrderId");
+    var orderManagement_CS = eSpace.References.Named("OrderManagement_CS");
+    var order = orderManagement_CS.Entities.OfType<OutSystems.Model.Data.IServerEntitySignature>().Named("Order");
+    orderId.DataType = order.IdentifierType;
+    var startNode = updateOrderAmount.CreateNode<OutSystems.Model.Logic.Nodes.IStartNode>();
+    var updateOrderAmount2 = updateOrderAmount.CreateNode<OutSystems.Model.Logic.Nodes.IExecuteServerActionNode>("UpdateOrderAmount");
+    var updateOrderAmount3 = eSpace.ServerActions.Named("UpdateOrderAmount");
+    updateOrderAmount2.Action = updateOrderAmount3;
+    var orderId2 = updateOrderAmount3.InputParameters.Named("OrderId");
+    updateOrderAmount2.SetArgumentValue(orderId2, "OrderId");
+    startNode.Target = updateOrderAmount2;
+    var endNode = updateOrderAmount.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>();
+    updateOrderAmount2.Target = endNode;
+}

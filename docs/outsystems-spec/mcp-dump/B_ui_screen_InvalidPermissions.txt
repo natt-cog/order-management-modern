@@ -1,0 +1,47 @@
+(OutSystems.Model.UI.Mobile.IMobileFlow common) => {
+    /*** creating IMobileScreen 'InvalidPermissions' ***/
+    var invalidPermissions = common.CreateScreen("InvalidPermissions");
+    invalidPermissions.GetESpace().Roles.ToList().ForEach(x => x.Delete());
+    var eSpace = common.GetESpace();
+    var anonymous = eSpace.SystemRoles.OfType<OutSystems.Model.Logic.ISystemRole>().Named("Anonymous");
+    invalidPermissions.Roles.Add(anonymous);
+    var orderManagement_CS = eSpace.References.Named("OrderManagement_CS");
+    var orderRepresentative = orderManagement_CS.Roles.Named("OrderRepresentative");
+    invalidPermissions.Roles.Add(orderRepresentative);
+    var orderManager = orderManagement_CS.Roles.Named("OrderManager");
+    invalidPermissions.Roles.Add(orderManager);
+    var registered = eSpace.SystemRoles.OfType<OutSystems.Model.Logic.ISystemRole>().Named("Registered");
+    invalidPermissions.Roles.Add(registered);
+    invalidPermissions.SetTitle("\"Invalid Permissions\"");
+    var layoutBlankInstance = invalidPermissions.CreateWidget<OutSystems.Model.UI.Mobile.Widgets.IMobileBlockInstanceWidget>();
+    var layoutBlank = common.Nodes.OfType<OutSystems.Model.UI.Mobile.IMobileBlock>().Named("LayoutBlank");
+    layoutBlankInstance.SourceBlock = layoutBlank;
+    var placeholderContentWidget = layoutBlankInstance.PlaceholdersContent.FirstOrDefault(p => p.Placeholder?.Name == "Content");
+    var blankSlateInstance = placeholderContentWidget.CreateWidget<OutSystems.Model.UI.Mobile.Widgets.IMobileBlockInstanceWidget>();
+    var outSystemsUI = eSpace.References.Named("OutSystemsUI");
+    var content = outSystemsUI.MobileFlows.Named("Content");
+    var blankSlate = content.Nodes.OfType<OutSystems.Model.UI.Mobile.IMobileBlockSignature>().Named("BlankSlate");
+    blankSlateInstance.SourceBlock = blankSlate;
+    // delete default content in Icon placeholder
+    var placeholderContentWidget2 = blankSlateInstance.PlaceholdersContent.FirstOrDefault(p => p.Placeholder?.Name == "Icon");
+    placeholderContentWidget2.Widgets.ToList().ForEach(w => w.Delete());
+    var extendedClass = blankSlate.InputParameters.Named("ExtendedClass");
+    var fullHeight = blankSlate.InputParameters.Named("FullHeight");
+    blankSlateInstance.SetArgumentValue(fullHeight, "True");
+    var icon1 = placeholderContentWidget2.CreateWidget<ServiceStudio.Plugin.NRWidgets.IIcon>("Icon1");
+    icon1.Icon = "warning";
+    icon1.IconSize = ServiceStudio.Plugin.NRWidgets.Enumerations.IconSize.FontSize;
+    var placeholderContentWidget3 = blankSlateInstance.PlaceholdersContent.FirstOrDefault(p => p.Placeholder?.Name == "Content");
+    var textWidget = placeholderContentWidget3.CreateWidget<OutSystems.Model.UI.Mobile.Widgets.ITextWidget>();
+    textWidget.Text = "You don\'t have permissions to view the required screen.";
+    var placeholderContentWidget4 = blankSlateInstance.PlaceholdersContent.FirstOrDefault(p => p.Placeholder?.Name == "Actions");
+    var button = placeholderContentWidget4.CreateWidget<ServiceStudio.Plugin.NRWidgets.IButton>();
+    button.SetEnabled("True");
+    button.Gap = null;
+    button.SetStyle("\"btn btn-primary\"");
+    var textWidget2 = (OutSystems.Model.UI.Mobile.Widgets.ITextWidget)button.Widgets.First();
+    textWidget2.Text = "Login";
+    var builtinEvent = button.OnClick;
+    var login = common.Nodes.OfType<OutSystems.Model.UI.Mobile.IMobileScreen>().Named("Login");
+    builtinEvent.Destination = login;
+}

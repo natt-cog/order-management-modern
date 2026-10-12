@@ -1,0 +1,21 @@
+(OutSystems.Model.IESpace eSpace) => {
+    /*** creating IServerAction 'Brand_Validate' ***/
+    var brand_Validate = eSpace.CreateServerAction("Brand_Validate");
+    var brand = eSpace.Folders.Named("Brand");
+    brand_Validate.Folder = brand;
+    var brandRecord = brand_Validate.CreateInputParameter("BrandRecord");
+    var brand2 = eSpace.Entities.OfType<OutSystems.Model.Data.IServerEntity>().Named("Brand");
+    brandRecord.DataType = brand2;
+    var startNode = brand_Validate.CreateNode<OutSystems.Model.Logic.Nodes.IStartNode>();
+    var ifNode = brand_Validate.CreateNode<OutSystems.Model.Logic.Nodes.IIfNode>();
+    ifNode.SetCondition("BrandRecord.Name = NullTextIdentifier()");
+    ifNode.Label = "Name is empty?";
+    startNode.Target = ifNode;
+    var endNode = brand_Validate.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>().Below(ifNode, 1600);
+    ifNode.FalseTarget = endNode;
+    var raiseExceptionNode = brand_Validate.CreateNode<OutSystems.Model.Logic.Nodes.IRaiseExceptionNode>().ToTheRightOf(ifNode, 1600);
+    var invalidArgumentsException = eSpace.UserExceptions.Named("InvalidArgumentsException");
+    raiseExceptionNode.Exception = invalidArgumentsException;
+    raiseExceptionNode.SetExceptionMessage("\"Name is required\"");
+    ifNode.TrueTarget = raiseExceptionNode;
+}

@@ -1,0 +1,22 @@
+(OutSystems.Model.IESpace eSpace) => {
+    /*** creating IServerAction 'GetApplicationPublicUrl' ***/
+    var getApplicationPublicUrl = eSpace.CreateServerAction("GetApplicationPublicUrl");
+    var utils = eSpace.Folders.Named("Utils");
+    getApplicationPublicUrl.Folder = utils;
+    getApplicationPublicUrl.Function = true;
+    getApplicationPublicUrl.Public = true;
+    getApplicationPublicUrl.Shareable = true;
+    var startNode = getApplicationPublicUrl.CreateNode<OutSystems.Model.Logic.Nodes.IStartNode>();
+    var getDefaultDnsName = getApplicationPublicUrl.CreateNode<OutSystems.Model.Logic.Nodes.IAggregateNode>("GetDefaultDnsName").ConnectedBelow(startNode, 1371);
+    var _System_ = eSpace.References.Named("(System)");
+    var parameter2 = _System_.Entities.OfType<OutSystems.Model.Data.IServerEntitySignature>().Named("Parameter");
+    var parameter = getDefaultDnsName.AsDatabaseAggregate.CreateSource(parameter2);
+    getDefaultDnsName.AsDatabaseAggregate.CreateFilter("Parameter.Name = \"DefaultDnsName\"");
+    var assignNode = getApplicationPublicUrl.CreateNode<OutSystems.Model.Logic.Nodes.IAssignNode>().ConnectedBelow(getDefaultDnsName, 1486);
+    var assignment = assignNode.CreateAssignment("Url", "\"http://\" + GetDefaultDnsName.List.Current.Parameter.Val + \"/\" + GetEntryEspaceName()");
+    var endNode = getApplicationPublicUrl.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>().ConnectedBelow(assignNode, 1463);
+    var commentNode = getApplicationPublicUrl.CreateNode<OutSystems.Model.Logic.Nodes.ICommentNode>();
+    commentNode.Text = "Doing this because this is also being used in emails (to which the bookmarkable url doesn\'t fit)";
+    var url = getApplicationPublicUrl.CreateOutputParameter("Url");
+    url.DataType = eSpace.TextType;
+}

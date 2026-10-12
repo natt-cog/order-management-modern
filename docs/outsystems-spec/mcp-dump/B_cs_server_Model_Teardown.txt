@@ -1,0 +1,23 @@
+(OutSystems.Model.IESpace eSpace) => {
+    /*** creating IServerAction 'Model_Teardown' ***/
+    var model_Teardown = eSpace.CreateServerAction("Model_Teardown");
+    var bootstrap = eSpace.Folders.Named("Bootstrap");
+    model_Teardown.Folder = bootstrap;
+    var startNode = model_Teardown.CreateNode<OutSystems.Model.Logic.Nodes.IStartNode>();
+    var getModels = model_Teardown.CreateNode<OutSystems.Model.Logic.Nodes.IAggregateNode>("GetModels");
+    var model2 = eSpace.Entities.OfType<OutSystems.Model.Data.IServerEntity>().Named("Model");
+    var model = getModels.AsDatabaseAggregate.CreateSource(model2);
+    getModels.AsDatabaseAggregate.CreateSort().SetAttribute("Model.Name");
+    startNode.Target = getModels;
+    var forEachNode = model_Teardown.CreateNode<OutSystems.Model.Logic.Nodes.IForEachNode>().ConnectedBelow(getModels, 1824);
+    forEachNode.SetRecordList("GetModels.List");
+    var deleteModel = model_Teardown.CreateNode<OutSystems.Model.Logic.Nodes.IExecuteServerActionNode>("DeleteModel");
+    deleteModel.Action = model2.DeleteAction;
+    deleteModel.Target = forEachNode;
+    var deleteModel2 = model2.DeleteAction;
+    var id = deleteModel2.InputParameters.Named("Id");
+    deleteModel.SetArgumentValue(id, "GetModels.List.Current.Model.Id");
+    forEachNode.CycleTarget = deleteModel;
+    var endNode = model_Teardown.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>();
+    forEachNode.Target = endNode;
+}

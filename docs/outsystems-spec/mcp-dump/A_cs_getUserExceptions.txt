@@ -1,0 +1,4 @@
+(OutSystems.Model.IESpace eSpace) => {
+    /*** creating IUserException 'InvalidArgumentsException' ***/
+    var invalidArgumentsException = eSpace.CreateUserException("InvalidArgumentsException");
+}

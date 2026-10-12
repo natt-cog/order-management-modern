@@ -1,0 +1,21 @@
+(OutSystems.Model.IESpace eSpace) => {
+    /*** creating IServerAction 'ProductCategory_Validate' ***/
+    var productCategory_Validate = eSpace.CreateServerAction("ProductCategory_Validate");
+    productCategory_Validate.Description = "Validates an product category record";
+    var productCategory = eSpace.Folders.Named("ProductCategory");
+    productCategory_Validate.Folder = productCategory;
+    var productCategoryRecord = productCategory_Validate.CreateInputParameter("ProductCategoryRecord");
+    var productCategory2 = eSpace.Entities.OfType<OutSystems.Model.Data.IServerEntity>().Named("ProductCategory");
+    productCategoryRecord.DataType = productCategory2;
+    var startNode = productCategory_Validate.CreateNode<OutSystems.Model.Logic.Nodes.IStartNode>();
+    var ifNode = productCategory_Validate.CreateNode<OutSystems.Model.Logic.Nodes.IIfNode>().ConnectedBelow(startNode, 1371);
+    ifNode.SetCondition("ProductCategoryRecord.Name = \"\"");
+    ifNode.Label = "Name is empty?";
+    var endNode = productCategory_Validate.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>().Below(ifNode, 1600);
+    ifNode.FalseTarget = endNode;
+    var raiseExceptionNode = productCategory_Validate.CreateNode<OutSystems.Model.Logic.Nodes.IRaiseExceptionNode>().ToTheRightOf(ifNode, 1600);
+    var invalidArgumentsException = eSpace.UserExceptions.Named("InvalidArgumentsException");
+    raiseExceptionNode.Exception = invalidArgumentsException;
+    raiseExceptionNode.SetExceptionMessage("\"Name is required\"");
+    ifNode.TrueTarget = raiseExceptionNode;
+}

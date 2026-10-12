@@ -1,0 +1,23 @@
+(OutSystems.Model.IESpace eSpace) => {
+    /*** creating IServerAction 'Account_Teardown' ***/
+    var account_Teardown = eSpace.CreateServerAction("Account_Teardown");
+    var bootstrap = eSpace.Folders.Named("Bootstrap");
+    account_Teardown.Folder = bootstrap;
+    var startNode = account_Teardown.CreateNode<OutSystems.Model.Logic.Nodes.IStartNode>();
+    var getAccounts = account_Teardown.CreateNode<OutSystems.Model.Logic.Nodes.IAggregateNode>("GetAccounts");
+    getAccounts.SetMaxRecords("999999999");
+    var account = eSpace.Entities.OfType<OutSystems.Model.Data.IServerEntity>().Named("Account");
+    var addSourceOperation = getAccounts.AsDatabaseAggregate.CreateSource(account);
+    startNode.Target = getAccounts;
+    var forEachNode = account_Teardown.CreateNode<OutSystems.Model.Logic.Nodes.IForEachNode>().ConnectedBelow(getAccounts, 1363);
+    forEachNode.SetRecordList("GetAccounts.List");
+    var deleteAccount = account_Teardown.CreateNode<OutSystems.Model.Logic.Nodes.IExecuteServerActionNode>("DeleteAccount").ToTheRightOf(forEachNode, 1824);
+    deleteAccount.Action = account.DeleteAction;
+    deleteAccount.Target = forEachNode;
+    var deleteAccount2 = account.DeleteAction;
+    var id = deleteAccount2.InputParameters.Named("Id");
+    deleteAccount.SetArgumentValue(id, "GetAccounts.List.Current.Account.Id");
+    forEachNode.CycleTarget = deleteAccount;
+    var endNode = account_Teardown.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>();
+    forEachNode.Target = endNode;
+}

@@ -1,0 +1,19 @@
+(OutSystems.Model.IESpace eSpace) => {
+    /*** creating IServerAction 'FormatMonthYear' ***/
+    var formatMonthYear = eSpace.CreateServerAction("FormatMonthYear");
+    var utils = eSpace.Folders.Named("Utils");
+    formatMonthYear.Folder = utils;
+    formatMonthYear.Function = true;
+    formatMonthYear.Public = true;
+    formatMonthYear.Shareable = true;
+    var date = formatMonthYear.CreateInputParameter("Date");
+    date.DataType = eSpace.DateType;
+    var startNode = formatMonthYear.CreateNode<OutSystems.Model.Logic.Nodes.IStartNode>();
+    var assignNode = formatMonthYear.CreateNode<OutSystems.Model.Logic.Nodes.IAssignNode>();
+    var assignment = assignNode.CreateAssignment("FormattedText", "Substr(FormatDateTime(Date, \"dd-MMMM\"),Index(FormatDateTime(Date, \"dd-MMMM\"),\"-\")+1,3) + \" \" + Substr(Year(Date),2,2)");
+    startNode.Target = assignNode;
+    var endNode = formatMonthYear.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>();
+    assignNode.Target = endNode;
+    var formattedText = formatMonthYear.CreateOutputParameter("FormattedText");
+    formattedText.DataType = eSpace.TextType;
+}

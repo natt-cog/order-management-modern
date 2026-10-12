@@ -1,0 +1,20 @@
+(OutSystems.Model.IESpace eSpace) => {
+    /*** creating IServerAction 'Floor' ***/
+    var floor = eSpace.CreateServerAction("Floor");
+    floor.Description = "Floor Function: the greatest integer that is less than or equal to x.";
+    var utils = eSpace.Folders.Named("Utils");
+    floor.Folder = utils;
+    floor.Function = true;
+    floor.Public = true;
+    floor.Shareable = true;
+    var in = floor.CreateInputParameter("In");
+    in.DataType = eSpace.IntegerType;
+    var startNode = floor.CreateNode<OutSystems.Model.Logic.Nodes.IStartNode>();
+    var assignNode = floor.CreateNode<OutSystems.Model.Logic.Nodes.IAssignNode>().ConnectedBelow(startNode, 2171);
+    assignNode.Label = "Round Previous";
+    var assignment = assignNode.CreateAssignment("Out", "In/100");
+    var assignment2 = assignNode.CreateAssignment("Out", "Out*100");
+    var endNode = floor.CreateNode<OutSystems.Model.Logic.Nodes.IEndNode>().ConnectedBelow(assignNode, 2149);
+    var out = floor.CreateOutputParameter("Out");
+    out.DataType = eSpace.IntegerType;
+}
