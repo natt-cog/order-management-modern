@@ -36,7 +36,7 @@ export default function ProductForm({ product, features, pictures, categories, b
   const model = models.find((m) => m.id === product?.modelId)?.name;
 
   return (
-    <form action={action} encType="multipart/form-data">
+    <form action={action}>
       <p><Link href="/products">‹ Back</Link></p>
       <div className="page-title">
         <h1>{isNew ? "New product" : "Product details"}</h1>
