@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useActionState, useState, useTransition } from "react";
-import { formatCurrency, formatDate, toInputDate } from "@/lib/format";
+import { formatCurrency, formatO11Date, formatO11DateTime, toInputDate } from "@/lib/format";
 import { deleteItemAction, deleteOrderAction, saveOrderAction, setStatusAction, type ActionResult } from "./actions";
 import ItemPanel, { type ItemRow, type ProductOpt } from "./ItemPanel";
 
@@ -69,10 +69,10 @@ export default function OrderEditor({ order, items, accounts, opportunities, pro
               {opportunities.filter((o) => !accountId || o.accountId === accountId).map((o) => <option key={o.id} value={o.id}>{o.name}</option>)}
             </select>) : <><input type="hidden" name="opportunityId" value={order.opportunityId ?? ""} /><Link href={`/opportunities/${opp?.id}`}>{opp?.name}</Link></>}</dd></>}
           <dt>Order Date</dt><dd>{editing ? <input type="date" name="expectedClosedOn" defaultValue={order.expectedClosedOn ?? ""} aria-label="Order Date" />
-            : <><input type="hidden" name="expectedClosedOn" value={order.expectedClosedOn ?? ""} />{formatDate(order.expectedClosedOn)}</>}</dd>
+            : <><input type="hidden" name="expectedClosedOn" value={order.expectedClosedOn ?? ""} />{formatO11Date(order.expectedClosedOn)}</>}</dd>
           <dt>Required On</dt><dd>{editing ? <input type="date" name="requiredOn" defaultValue={toInputDate(order.requiredOn)} aria-label="Required On" />
-            : <><input type="hidden" name="requiredOn" value={toInputDate(order.requiredOn)} />{formatDate(order.requiredOn)}</>}</dd>
-          {order.shippedOn && order.orderStatusId === 3 && <><dt>Shipped On</dt><dd>{formatDate(order.shippedOn)}</dd></>}
+            : <><input type="hidden" name="requiredOn" value={toInputDate(order.requiredOn)} />{formatO11DateTime(order.requiredOn)}</>}</dd>
+          {order.shippedOn && order.orderStatusId === 3 && <><dt>Shipped On</dt><dd>{formatO11DateTime(order.shippedOn)}</dd></>}
         </dl>
       </form>
 

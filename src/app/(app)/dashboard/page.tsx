@@ -2,7 +2,8 @@ import Link from "next/link";
 import { requireRole } from "@/lib/auth";
 import { OrderStatus } from "@/lib/services/orders";
 import * as q from "@/lib/queries/dashboard";
-import { BarChart, GoalProgress, OrdersList, TopPerformers, TopProducts, monthLabel } from "@/components/dashboard";
+import { BarChart, GoalProgress, TopPerformers, TopProducts, monthLabel } from "@/components/dashboard";
+import { OrdersTabs } from "@/components/OrdersTabs";
 
 export default async function Dashboard() {
   const s = await requireRole();
@@ -23,11 +24,11 @@ export default async function Dashboard() {
         <GoalProgress title="Personal Goal" {...g.personal} />
         <GoalProgress title="Team Goal" {...g.teamRep} />
       </div>
-      <div className="grid grid-3">
-        <OrdersList title="Draft orders" rows={draft} empty="No draft orders..." />
-        <OrdersList title="Submitted orders" rows={submitted} empty="No on going orders..." showStatus />
-        <OrdersList title="Rejected orders" rows={rejected} empty="No rejected orders..." />
-      </div>
+      <OrdersTabs tabs={[
+        { title: "Draft orders", rows: draft, empty: "No draft orders..." },
+        { title: "Submitted orders", rows: submitted, empty: "No on going orders..." },
+        { title: "Rejected orders", rows: rejected, empty: "No rejected orders..." },
+      ]} />
       <TopPerformers rows={performers} />
       <TopProducts rows={products} />
     </>

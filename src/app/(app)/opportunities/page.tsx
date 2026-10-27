@@ -48,7 +48,7 @@ export default async function Opportunities({ searchParams }: { searchParams: Pr
             </tr></thead>
             <tbody>{rows.map((o) => (
               <tr key={o.id}><td><Link href={`/opportunities/${o.id}`}>{o.name}</Link></td><td>{o.company}</td>
-                <td className="right">{formatCurrency(o.amount)}</td><td className="right">{Number(o.probability ?? 0)}%</td><td>{formatDate(o.closeOn)}</td></tr>
+                <td className="right">{formatCurrency(o.amount)}</td><td className="right">{Number(o.probability ?? 0).toFixed(2)}</td><td>{formatDate(o.closeOn)}</td></tr>
             ))}</tbody>
           </table>
         )}

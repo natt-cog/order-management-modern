@@ -1,13 +1,13 @@
 import Link from "next/link";
 import { requireRole } from "@/lib/auth";
-import { formatCurrency } from "@/lib/format";
 import * as q from "@/lib/queries/dashboard";
-import { BarChart, GoalProgress, OrdersList, TopPerformers, TopProducts, monthLabel } from "@/components/dashboard";
+import { BarChart, GoalProgress, TopPerformers, TopProducts, monthLabel } from "@/components/dashboard";
+import { OrdersTabs } from "@/components/OrdersTabs";
 
 export default async function DashboardManager() {
   const s = await requireRole(["OrderManager"]);
-  const [props, submitted, opps, performers, products, history, categories] = await Promise.all([
-    q.getSiteProperties(), q.submittedOrders(), q.prospectingOpportunities(), q.topPerformers(), q.topProducts(),
+  const [props, submitted, performers, products, history, categories] = await Promise.all([
+    q.getSiteProperties(), q.submittedOrders(), q.topPerformers(), q.topProducts(),
     q.salesHistory(), q.amountByCategory(),
   ]);
   const g = q.goals(props);
@@ -22,18 +22,8 @@ export default async function DashboardManager() {
         <GoalProgress title="Team Goal" {...g.teamManager} />
         <GoalProgress title="Company Goal" {...g.company} />
       </div>
-      <div className="grid grid-2">
-        <OrdersList title="Submitted orders" rows={submitted} empty="No submitted orders..." />
-        <div className="card" data-testid="list-opportunities">
-          <strong>Opportunities</strong>
-          {opps.length === 0 ? <div className="empty">No opportunities to show...</div> : (
-            <table className="table"><thead><tr><th>Opportunity</th><th className="right">Amount</th></tr></thead>
-              <tbody>{opps.slice(0, 5).map((o) => (
-                <tr key={o.id}><td><Link href={`/opportunities/${o.id}`}>{o.name}</Link><div className="muted">{o.company}</div></td>
-                  <td className="right">{formatCurrency(o.amount)}</td></tr>))}</tbody></table>
-          )}
-        </div>
-      </div>
+      {/* O11 の OrdersBySalesManager には Opportunities タブもあるが、実機では表示されない（見出しも出ない）ため出さない */}
+      <OrdersTabs tabs={[{ title: "Submitted orders", rows: submitted, empty: "No submitted orders..." }]} />
       <TopPerformers rows={performers} />
       <TopProducts rows={products} />
     </>

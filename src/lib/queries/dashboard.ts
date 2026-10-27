@@ -39,7 +39,7 @@ export async function ordersByRepresentative(userId: number, statusId: number) {
     .innerJoin(s.accounts, eq(s.orders.accountId, s.accounts.id))
     .innerJoin(s.orderStatuses, eq(s.orders.orderStatusId, s.orderStatuses.id))
     .where(and(eq(s.orders.isActive, true), eq(s.orders.createdBy, userId), eq(s.orders.orderStatusId, statusId)))
-    .orderBy(desc(s.orders.createdOn), desc(s.orders.code)).limit(50);
+    .orderBy(asc(s.orders.updatedOn), asc(s.orders.id)).limit(50);
 }
 
 /** Dashboard_OrdersBySalesManager: 全員の Submitted（承認待ち） */
@@ -48,7 +48,7 @@ export async function submittedOrders() {
     .innerJoin(s.accounts, eq(s.orders.accountId, s.accounts.id))
     .innerJoin(s.orderStatuses, eq(s.orders.orderStatusId, s.orderStatuses.id))
     .where(and(eq(s.orders.isActive, true), eq(s.orders.orderStatusId, OrderStatus.Submitted)))
-    .orderBy(desc(s.orders.createdOn)).limit(50);
+    .orderBy(asc(s.orders.updatedOn), asc(s.orders.id)).limit(50);
 }
 
 /** Dashboard_OrdersBySalesManager: Prospecting の商談 */

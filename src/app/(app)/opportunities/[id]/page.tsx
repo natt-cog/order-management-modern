@@ -3,11 +3,11 @@ import { notFound } from "next/navigation";
 import { and, asc, eq } from "drizzle-orm";
 import { db, schema as s } from "@/db";
 import { requireRole } from "@/lib/auth";
-import { formatCurrency, formatDate } from "@/lib/format";
+import { formatCurrency, formatDate, formatO11DateTime, formatO11Number } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 
-/** OpportunityDetail: Is Closed = ClosedWon/ClosedLost, Won = ClosedWon、関連注文（最大 10 件） */
+/** OpportunityDetail: O11 と同じく書式なしの値を表示。Is Closed = ClosedWon/ClosedLost（チェック）、"Won" は ClosedWon のときだけ表示、関連注文（最大 10 件） */
 export default async function OpportunityDetail({ params }: { params: Promise<{ id: string }> }) {
   await requireRole();
   const { id } = await params;
@@ -22,9 +22,9 @@ export default async function OpportunityDetail({ params }: { params: Promise<{ 
   const isClosed = o.stageId === "ClosedWon" || o.stageId === "ClosedLost";
   const rows: [string, React.ReactNode][] = [
     ["Account", <Link key="a" href={`/accounts/${o.o.accountId}`}>{o.company}</Link>], ["Description", o.o.description],
-    ["Close Date", formatDate(o.o.closeOn)], ["Stage name", o.stage], ["Is Closed", isClosed ? "Yes" : "No"],
-    ["Won", o.stageId === "ClosedWon" ? "Yes" : "No"], ["Amount", formatCurrency(o.o.amount)],
-    ["Expected Revenue", formatCurrency(o.o.expectedRevenue)], ["Probability", `${Number(o.o.probability ?? 0)}%`],
+    ["Close Date", formatO11DateTime(o.o.closeOn)], ["Stage name", o.stage],
+    ["Is Closed", <span key="c"><input type="checkbox" checked={isClosed} disabled aria-label="Is Closed" />{o.stageId === "ClosedWon" && " Won"}</span>],
+    ["Amount", formatO11Number(o.o.amount)], ["Expected Revenue", formatO11Number(o.o.expectedRevenue)], ["Probability", formatO11Number(o.o.probability)],
   ];
   return (
     <>

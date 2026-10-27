@@ -31,3 +31,25 @@ export function toInputDate(v: Date | string | null | undefined): string {
   const d = toDate(v);
   return d ? d.toISOString().slice(0, 10) : "";
 }
+
+const pad = (n: number) => String(n).padStart(2, "0");
+
+/** O11 の Date をそのまま出す表示（例: 2020-04-09） */
+export function formatO11Date(v: Date | string | null | undefined): string {
+  if (!v) return "";
+  if (typeof v === "string" && /^\d{4}-\d{2}-\d{2}$/.test(v)) return v;
+  const d = new Date(v);
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+
+/** O11 の DateTime をそのまま出す表示（例: 2020-04-01 00:00:00） */
+export function formatO11DateTime(v: Date | string | null | undefined): string {
+  if (!v) return "";
+  const d = new Date(typeof v === "string" && /^\d{4}-\d{2}-\d{2}$/.test(v) ? `${v}T00:00:00` : v);
+  return `${formatO11Date(d)} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+}
+
+/** O11 の Decimal / Currency を書式なしで出す表示（例: 1675） */
+export function formatO11Number(v: number | string | null | undefined): string {
+  return v == null ? "" : String(Number(v));
+}

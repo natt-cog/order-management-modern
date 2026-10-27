@@ -20,7 +20,8 @@ export default async function Catalog({ searchParams }: { searchParams: Promise<
           <option value="">All Categories</option>
           {cats.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
         </select>
-        <select name="sort" defaultValue={p.sort ?? "name"} aria-label="Sort by">
+        <select name="sort" defaultValue={p.sort ?? ""} aria-label="Sort by">
+          <option value="">(Sort by)</option>
           {PRODUCT_SORTS.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
         </select>
       </AutoSubmitForm>
