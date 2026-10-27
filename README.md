@@ -26,6 +26,7 @@ O11 との並べた比較は `docs/evidence/parity/`（`*_o11.png` と `*_next.p
 - [現行仕様書（MCP で分かったこと / 実機で分かったこと）](docs/01_仕様書.md)
 - [移行設計書](docs/02_移行設計書.md)
 - [完了報告書（比較結果）](docs/03_報告書.md)
+- [完了報告書（PDF 版）](docs/report/OrderManagement_移行完了報告書.pdf)
 
 ## 動かし方
 前提: Node.js 20、pnpm、PostgreSQL 16
