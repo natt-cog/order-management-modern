@@ -1,15 +1,11 @@
 "use server";
+import { SAMPLE_USERNAMES } from "./sample-users";
 import { redirect } from "next/navigation";
 import { eq, inArray } from "drizzle-orm";
 import bcrypt from "bcryptjs";
 import { db, schema as s } from "@/db";
 import { loadSessionFor, signIn, signOut, isManager } from "@/lib/auth";
 
-export const SAMPLE_USERNAMES = [
-  "manuel.luis@observeverything.example",
-  "ana.martins@observeverything.example",
-  "jose.felix@observeverything.example",
-];
 
 async function landing(userId: number) {
   const session = await loadSessionFor(userId);

@@ -1,5 +1,5 @@
 import "server-only";
-import { and, desc, eq, gte, lte, sql } from "drizzle-orm";
+import { and, asc, desc, eq, gte, lte, sql } from "drizzle-orm";
 import { db, schema as s } from "@/db";
 import { OrderStatus } from "@/lib/services/orders";
 
@@ -90,10 +90,11 @@ export async function salesHistory() {
 }
 
 /** Dashboard_GetByCategory: カテゴリ別明細金額の上位5件 */
+/** Dashboard_GetByCategory: O11 の式と並び（AmountSum 昇順・先頭 5 件）をそのまま再現。タイトルは "Top 5" だが実際は下位 5 カテゴリ */
 export async function amountByCategory() {
-  const amount = sql<string>`sum(${s.orderItems.amount})`;
+  const amount = sql<string>`sum(${s.products.price} * ${s.orderItems.quantity} * (100 - coalesce(${s.orderItems.discount}, 0) / 100))`;
   return db.select({ name: s.productCategories.name, amount }).from(s.orderItems)
     .innerJoin(s.products, eq(s.orderItems.productId, s.products.id))
     .innerJoin(s.productCategories, eq(s.products.categoryId, s.productCategories.id))
-    .groupBy(s.productCategories.name).orderBy(desc(amount)).limit(5);
+    .groupBy(s.productCategories.name).orderBy(asc(amount)).limit(5);
 }

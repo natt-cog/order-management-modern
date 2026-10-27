@@ -3,7 +3,8 @@ const money = new Intl.NumberFormat("en-US", { minimumFractionDigits: 2, maximum
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
 export function formatCurrency(v: number | string | null | undefined): string {
-  return `€${money.format(Number(v ?? 0))}`;
+  // O11 実機表示（toFixed 相当: 倍精度の実値で丸め）に合わせる: 20629.405 → 20,629.40
+  return `€${money.format(Number(Number(v ?? 0).toFixed(2)))}`;
 }
 
 /** PrettyFormatCurrency(Value, Decimals=0) 相当: 1,000 以上は k 表記 ("€50k", "€2,719k") */

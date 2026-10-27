@@ -1,6 +1,6 @@
 import { inArray } from "drizzle-orm";
 import { db, schema as s } from "@/db";
-import { SAMPLE_USERNAMES } from "./actions";
+import { SAMPLE_USERNAMES } from "./sample-users";
 import LoginForm from "./LoginForm";
 
 export const dynamic = "force-dynamic";

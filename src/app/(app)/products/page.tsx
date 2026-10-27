@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { requireRole } from "@/lib/auth";
-import { CATALOG_PAGE, categories, listProducts, PRODUCT_SORTS } from "@/lib/queries/products";
+import { categories, listProducts, PRODUCT_SORTS } from "@/lib/queries/products";
 import AutoSubmitForm from "@/components/AutoSubmitForm";
 import { hrefWith } from "@/components/list";
 
