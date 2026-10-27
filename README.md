@@ -1,36 +1,62 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# OrderManagement（Next.js + PostgreSQL 版）
 
-## Getting Started
+OutSystems 11 の受注管理アプリ **OrderManagement**（`personal-pimir0dg.outsystemscloud.com`）を、Next.js 15 + PostgreSQL 16 で作り直したものです。O11 の画面・業務ルール・初期データを同じにし、O11 側のグラフ描画エラーだけを直しています。
 
-First, run the development server:
+ACME 社の営業担当が顧客ごとに注文を作って商品を追加し、マネージャーが承認・却下します。
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```mermaid
+flowchart LR
+  Rep[営業担当<br/>Manuel / Ana] -->|注文作成・明細追加・Submit| App
+  Mgr[マネージャー<br/>José] -->|Approve / Reject・削除| App
+  App[Next.js 15<br/>App Router + Server Actions] --> DB[(PostgreSQL 16)]
+  Seed[scripts/seed.ts<br/>O11 Bootstrap の xlsx / zip] --> DB
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 主な画面
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Dashboard（担当者） | Orders |
+|---|---|
+| ![Dashboard](docs/evidence/parity/01_Dashboard_next.png) | ![Orders](docs/evidence/parity/02_Orders_next.png) |
+| **注文詳細** | **商品詳細** |
+| ![OrderDetail](docs/evidence/parity/03_OrderDetail_ORD0004_next.png) | ![ProductDetail](docs/evidence/parity/05_ProductDetail_next.png) |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+O11 との並べた比較は `docs/evidence/parity/`（`*_o11.png` と `*_next.png`）にあります。
 
-## Learn More
+## ドキュメント
+- [現行仕様書（MCP で分かったこと / 実機で分かったこと）](docs/01_仕様書.md)
+- [移行設計書](docs/02_移行設計書.md)
+- [完了報告書（比較結果）](docs/03_報告書.md)
 
-To learn more about Next.js, take a look at the following resources:
+## 動かし方
+前提: Node.js 20、pnpm、PostgreSQL 16
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+cp .env.example .env          # DATABASE_URL と SESSION_SECRET を設定
+pnpm install
+pnpm db:migrate               # テーブル作成
+pnpm db:seed                  # O11 の初期データを投入（何度でもやり直せる）
+pnpm dev                      # http://localhost:3000
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+ログイン画面の「Sample Users」から 3 名のどれかを選ぶか、ユーザー名（例 `manuel.luis@observeverything.example`）とパスワード `outsystems` でログインします。
 
-## Deploy on Vercel
+| ユーザー | ロール |
+|---|---|
+| Manuel Luís / Ana Martins | 営業担当（OrderRepresentative） |
+| José Felix | マネージャー（OrderManager） |
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## テスト
+```bash
+pnpm typecheck && pnpm lint && pnpm test && pnpm build
+pnpm exec playwright install chromium   # 初回のみ
+pnpm test:e2e                            # データを更新するので、終わったら pnpm db:seed
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 構成
+| パス | 内容 |
+|---|---|
+| `src/app/(app)/*` | 画面（O11 の Screen に対応） |
+| `src/lib/services/*` | 更新系の業務ルール・検証（O11 CS の Server Action に対応） |
+| `src/lib/queries/*` | 参照系（O11 の Aggregate に対応） |
+| `src/db/schema.ts`、`drizzle/` | テーブル定義とマイグレーション |
+| `data/outsystems-resources/` | O11 MCP の getResource で取り出した Bootstrap 用の xlsx / zip |
