@@ -1,0 +1,47 @@
+{
+  "name": "order-management-modern",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "db:push": "drizzle-kit push",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:seed": "tsx --env-file=.env scripts/seed.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "bcryptjs": "2.4.3",
+    "drizzle-orm": "0.36.4",
+    "jose": "5.9.6",
+    "next": "15.1.6",
+    "postgres": "3.4.5",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "server-only": "0.0.1",
+    "zod": "3.23.8"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@playwright/test": "1.47.2",
+    "@types/adm-zip": "0.5.6",
+    "@types/bcryptjs": "2.4.6",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "adm-zip": "0.5.16",
+    "drizzle-kit": "0.28.1",
+    "eslint": "^9",
+    "eslint-config-next": "15.1.6",
+    "tsx": "4.19.2",
+    "typescript": "^5",
+    "vitest": "2.1.8",
+    "xlsx": "0.18.5"
+  },
+  "packageManager": "pnpm@9.15.9+sha512.68046141893c66fad01c079231128e9afb89ef87e2691d69e4d40eee228988295fd4682181bae55b58418c3a253bde65a505ec7c5f9403ece5cc3cd37dcf2531"
+}
