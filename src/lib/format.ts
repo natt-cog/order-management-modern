@@ -6,11 +6,11 @@ export function formatCurrency(v: number | string | null | undefined): string {
   return `€${money.format(Number(v ?? 0))}`;
 }
 
-/** Dashboard の "€50k" / "€2.719k" 表記（Decimal_FormatPretty 相当） */
-export function formatPretty(v: number | string | null | undefined): string {
+/** PrettyFormatCurrency(Value, Decimals=0) 相当: 1,000 以上は k 表記 ("€50k", "€2,719k") */
+export function formatPretty(v: number | string | null | undefined, decimals = 0): string {
   const n = Number(v ?? 0);
-  if (Math.abs(n) >= 1000) return `€${Number((n / 1000).toFixed(3))}k`;
-  return `€${Number(n.toFixed(2))}`;
+  const f = new Intl.NumberFormat("en-US", { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+  return Math.abs(n) >= 1000 ? `€${f.format(n / 1000)}k` : `€${f.format(n)}`;
 }
 
 function toDate(v: Date | string | null | undefined): Date | null {
