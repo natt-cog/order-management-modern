@@ -93,7 +93,8 @@ export default function OrderEditor({ order, items, accounts, opportunities, pro
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 12 }}>
             <span>Total amount <strong data-testid="order-total">{formatCurrency(order.totalAmount)}</strong></span>
             <span style={{ display: "flex", gap: 8, alignItems: "center" }}>
-              {draftLike && items.length > 0 && <button className="btn" disabled={pending} onClick={() => run(() => setStatusAction(order.id!, 2))}>Submit</button>}
+              {/* O11: Submit は If_IsOrderManager の中にあり、マネージャーにだけ表示される */}
+              {isManager && draftLike && items.length > 0 && <button className="btn" disabled={pending} onClick={() => run(() => setStatusAction(order.id!, 2))}>Submit</button>}
               {isManager && order.orderStatusId === 2 && <>
                 <button className="btn btn-success" disabled={pending} onClick={() => run(() => setStatusAction(order.id!, 3))}>Approve</button>
                 <span>or</span>

@@ -52,7 +52,7 @@ test("Catalog は 12 件表示 + Load more", async ({ page }) => {
   await expect(page.getByTestId("catalog-count")).toHaveText("24 of 28 products");
 });
 
-test("注文作成 → 明細追加 → 在庫チェック → Submit → Manager 承認", async ({ page, browser }) => {
+test("注文作成 → 明細追加 → 在庫チェック → Manager が Submit・承認", async ({ page, browser }) => {
   await loginAs(page, "Manuel Luís");
   await page.goto("/orders/new");
   await page.getByRole("button", { name: "Save" }).click();
@@ -70,14 +70,27 @@ test("注文作成 → 明細追加 → 在庫チェック → Submit → Manage
   await expect(page.getByTestId("item-total")).toHaveText("€449.98");
   await page.getByRole("button", { name: "Add", exact: true }).click();
   await expect(page.getByTestId("order-total")).toHaveText("€449.98");
-  await page.getByRole("button", { name: "Submit" }).click();
-  await expect(page.getByText("The order status was changed.")).toBeVisible();
+  // O11 と同じく、Submit はマネージャーにだけ表示される
+  await expect(page.getByRole("button", { name: "Submit" })).toHaveCount(0);
 
   const ctx = await browser.newContext();
   const mgr = await ctx.newPage();
   await loginAs(mgr, "José Felix");
   await mgr.goto(url);
+  await mgr.getByRole("button", { name: "Submit" }).click();
+  await expect(mgr.getByText("The order status was changed.")).toBeVisible();
   await mgr.getByRole("button", { name: "Approve" }).click();
   await expect(mgr.getByText("The order status was changed.")).toBeVisible();
   await ctx.close();
+});
+
+test("ProductDetail: Edit で編集モードになり、割引を変えると Final price が再計算される", async ({ page }) => {
+  await loginAs(page, "Manuel Luís");
+  await page.goto("/products/20");
+  await page.getByRole("button", { name: "Edit" }).click();
+  await expect(page).not.toHaveURL(/saved=1/);
+  await expect(page.getByRole("button", { name: "Save" })).toBeVisible();
+  await expect(page.getByTestId("final-price")).toHaveText("€90.59");
+  await page.getByLabel("Discount (%)").fill("20");
+  await expect(page.getByTestId("final-price")).toHaveText("€120.79");
 });

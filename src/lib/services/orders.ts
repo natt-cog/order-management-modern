@@ -49,7 +49,7 @@ export async function saveOrder(session: Session, input: OrderInput, tx?: Tx): P
       const [cur] = await t.select().from(s.orders).where(eq(s.orders.id, input.id!));
       if (!cur) throw new InvalidArgumentsException("Order not found");
       if (status !== cur.orderStatusId && !isManager(session)) {
-        // Representative は Draft/Rejected → Submitted（Submit ボタン）のみ許可（OrderDetail 画面の Submit）
+        // Representative も Draft/Rejected → Submitted は許可（サーバー側の権限は O11 と同じ。Submit ボタンは画面上マネージャーにだけ出る）
         const submitting = status === OrderStatus.Submitted && (cur.orderStatusId === OrderStatus.Draft || cur.orderStatusId === OrderStatus.Rejected);
         if (!submitting) throw new PermissionException();
       }

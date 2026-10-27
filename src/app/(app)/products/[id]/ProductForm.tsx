@@ -40,8 +40,8 @@ export default function ProductForm({ product, features, pictures, categories, b
       <p><Link href="/products">‹ Back</Link></p>
       <div className="page-title">
         <h1>{isNew ? "New product" : "Product details"}</h1>
-        {editing ? <button className="btn" disabled={pending}>Save</button>
-          : <button type="button" className="btn btn-secondary" onClick={() => setEditing(true)}>Edit</button>}
+        {editing ? <button key="save" type="submit" className="btn" disabled={pending}>Save</button>
+          : <button key="edit" type="button" className="btn btn-secondary" onClick={(e) => { e.preventDefault(); setEditing(true); }}>Edit</button>}
       </div>
       {state?.message && <div className={`message ${state.ok ? "success" : "error"}`} role="status">{state.message}</div>}
       <input type="hidden" name="id" value={product?.id ?? ""} />
